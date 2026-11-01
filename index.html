@@ -1,0 +1,2769 @@
+<!doctype html>
+<html lang="ko" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0B1118">
+<meta name="description" content="GOYO 고요 — 조용한 명상과 호흡을 위한 웹앱">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>GOYO 고요</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230B1118'/%3E%3Ccircle cx='32' cy='32' r='13' fill='none' stroke='%2384B7B0' stroke-width='3'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap">
+<style>
+:root{
+  --ease:cubic-bezier(.22,.61,.36,1);
+  --ease-out:cubic-bezier(.16,1,.3,1);
+  --bg:#0B1118;--bg2:#111D29;--mist:#A9BBC4;--teal:#84B7B0;--text:#EAF1EF;--sub:#84949E;
+  --tr:132,183,176;
+  --faint:rgba(234,241,239,.42);--line:rgba(234,241,239,.08);--line2:rgba(234,241,239,.15);
+  --glass:rgba(12,19,27,.66);--fill:rgba(234,241,239,.045);--fill2:rgba(234,241,239,.09);
+  --veil:rgba(11,17,24,.85);--fade:#0B1118;--sheet:#0f1822;
+  --shadow:0 24px 70px rgba(0,0,0,.4);
+  --serif:"Gowun Batang","Nanum Myeongjo","AppleMyungjo",serif;
+  color-scheme:dark;
+}
+[data-theme=light]{
+  --bg:#F3EFE6;--bg2:#E9E2D4;--mist:#5F727D;--teal:#5E8679;--text:#22302E;--sub:#65727A;
+  --tr:94,134,121;
+  --faint:rgba(34,48,46,.46);--line:rgba(34,48,46,.09);--line2:rgba(34,48,46,.17);
+  --glass:rgba(247,244,237,.74);--fill:rgba(34,48,46,.045);--fill2:rgba(34,48,46,.085);
+  --veil:rgba(243,239,230,.86);--fade:#F3EFE6;--sheet:#F8F5EF;
+  --shadow:0 24px 70px rgba(70,60,40,.14);
+  color-scheme:light;
+}
+.force-dark{
+  --bg:#060a11;--text:#C6D2D6;--sub:#6E7E87;--mist:#8DA2AC;--teal:#7FA9A3;--tr:127,169,163;
+  --faint:rgba(198,210,214,.4);--line:rgba(198,210,214,.07);--line2:rgba(198,210,214,.13);
+  --fill:rgba(198,210,214,.04);--fill2:rgba(198,210,214,.08);--sheet:#0a1018;--fade:#060a11;--glass:rgba(8,13,20,.6);--veil:rgba(6,10,17,.85);
+  color:var(--text);
+  color-scheme:dark;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;background:var(--bg);overflow-x:hidden;overflow-x:clip}
+body{overflow-x:hidden;overflow-x:clip}
+body{
+  font-family:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",system-ui,sans-serif;
+  color:var(--text);background:var(--bg);min-height:100vh;min-height:100dvh;
+  font-size:15px;line-height:1.6;letter-spacing:-.012em;word-break:keep-all;overflow-wrap:anywhere;
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;-webkit-tap-highlight-color:transparent;
+  transition:background-color .6s var(--ease),color .6s var(--ease);
+}
+body.locked{overflow:hidden}
+.serif{font-family:var(--serif);letter-spacing:-.02em}
+.num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+button,input,select,textarea{font:inherit;color:inherit;letter-spacing:inherit}
+button{background:none;border:0;cursor:pointer;-webkit-user-select:none;user-select:none;touch-action:manipulation}
+button:disabled{opacity:.4;cursor:default}
+:focus{outline:none}
+:focus-visible{outline:2px solid var(--teal);outline-offset:3px;border-radius:10px}
+.ic{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.sr{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+[hidden]{display:none!important}
+
+/* ---------- Scene ---------- */
+#scene{position:fixed;inset:0;width:100vw;height:100vh;height:100lvh;z-index:0;display:block;transition:opacity .38s var(--ease)}
+#veil{position:fixed;inset:0;z-index:1;pointer-events:none;background:var(--veil);transition:opacity .7s var(--ease),background-color .6s}
+body[data-tab=today] #veil{opacity:0}
+
+/* ---------- App shell ---------- */
+#app{position:relative;z-index:2;overflow-x:hidden;overflow-x:clip;min-height:100vh;min-height:100dvh;transition:opacity .5s var(--ease),filter .5s}
+body.immersive #app,body.immersive #nav,body.ob-open #app,body.ob-open #nav{opacity:0;pointer-events:none}
+#main{max-width:580px;margin:0 auto;padding:0 22px calc(120px + env(safe-area-inset-bottom));padding-left:max(22px,env(safe-area-inset-left));padding-right:max(22px,env(safe-area-inset-right))}
+#side{display:none}
+
+/* nav */
+#nav{position:fixed;left:0;right:0;bottom:0;z-index:20;padding:0 12px calc(10px + env(safe-area-inset-bottom));pointer-events:none;transition:opacity .5s var(--ease)}
+.nav-inner{pointer-events:auto;position:relative;max-width:440px;margin:0 auto;height:66px;display:grid;grid-template-columns:repeat(5,1fr);border-radius:24px;background:var(--glass);-webkit-backdrop-filter:blur(22px) saturate(1.25);backdrop-filter:blur(22px) saturate(1.25);border:1px solid var(--line);box-shadow:0 12px 40px rgba(0,0,0,.18)}
+.nav-ind{position:absolute;top:7px;bottom:7px;left:0;width:20%;transform:translateX(calc(var(--i,0) * 100%));transition:transform .55s var(--ease-out);pointer-events:none}
+.nav-ind::after{content:"";position:absolute;inset:0 7px;border-radius:17px;background:var(--fill2)}
+.nav-btn{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--sub);font-size:11px;letter-spacing:0;transition:color .4s var(--ease)}
+.nav-btn .ic{width:22px;height:22px;stroke-width:1.4}
+.nav-btn[aria-current=page]{color:var(--text)}
+.nav-btn:active .ic{transform:scale(.92)}
+.brand{display:none}
+
+/* screens */
+.screen{display:none}
+.screen.active{display:block;animation:screenIn .55s var(--ease-out) both}
+.screen.leaving{animation:screenOut .16s var(--ease) both}
+@keyframes screenIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes screenOut{to{opacity:0;transform:translateY(-4px)}}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.reveal{animation:rise .8s var(--ease-out) both}
+.d1{animation-delay:.08s}.d2{animation-delay:.16s}.d3{animation-delay:.24s}.d4{animation-delay:.32s}
+
+/* type */
+.eyebrow{font-size:12px;letter-spacing:.16em;color:var(--sub);font-weight:500}
+.page-head{padding-top:calc(52px + env(safe-area-inset-top));margin-bottom:28px}
+.page-head h1{font-family:var(--serif);font-weight:400;font-size:32px;line-height:1.3;letter-spacing:-.02em}
+.page-head p{color:var(--sub);margin-top:6px}
+.sec-title{font-size:13px;font-weight:500;color:var(--sub);letter-spacing:.06em;margin:44px 0 12px}
+.fine{font-size:12.5px;color:var(--sub);line-height:1.65}
+.muted{color:var(--sub)}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:50px;padding:0 24px;border-radius:999px;font-size:15px;font-weight:500;transition:transform .25s var(--ease),background-color .3s,opacity .3s,color .3s;white-space:nowrap}
+.btn:active{transform:scale(.965)}
+.btn .ic{width:16px;height:16px}
+.btn.primary{background:var(--text);color:var(--bg)}
+.btn.primary .ic{fill:currentColor;stroke:none}
+.btn.ghost{background:var(--fill2)}
+.btn.quiet{background:none;color:var(--sub);padding:0 14px}
+.btn.wide{width:100%}
+.btn.sm{height:40px;padding:0 16px;font-size:14px}
+.icon-btn{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;color:var(--text);transition:transform .2s var(--ease),background-color .3s}
+.icon-btn:active{transform:scale(.92)}
+.icon-btn.glass{background:var(--glass);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.icon-btn.lg{width:52px;height:52px}
+.link{color:var(--sub);font-size:14px;padding:8px 0;text-decoration:underline;text-underline-offset:4px;text-decoration-color:var(--line2)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{height:38px;padding:0 15px;border-radius:999px;border:1px solid var(--line2);font-size:14px;color:var(--sub);display:inline-flex;align-items:center;gap:6px;transition:background-color .3s var(--ease),color .3s,border-color .3s,transform .2s;white-space:nowrap}
+.chip:active{transform:scale(.96)}
+.chip[aria-pressed=true],.chip[aria-checked=true]{background:var(--text);color:var(--bg);border-color:transparent}
+.chip.sm{height:32px;font-size:13px;padding:0 12px}
+.chip .ic{width:15px;height:15px}
+
+/* controls */
+.seg{display:flex;padding:3px;border-radius:14px;background:var(--fill);gap:2px}
+.seg button{flex:1;min-height:38px;border-radius:11px;font-size:13.5px;color:var(--sub);padding:0 6px;transition:background-color .35s var(--ease),color .3s}
+.seg button[aria-checked=true]{background:var(--fill2);color:var(--text)}
+.switch{width:50px;height:30px;border-radius:999px;background:var(--fill2);position:relative;flex:none;transition:background-color .35s var(--ease)}
+.switch::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:var(--text);opacity:.55;transition:transform .4s var(--ease-out),opacity .3s}
+.switch[aria-checked=true]{background:var(--teal)}
+.switch[aria-checked=true]::after{transform:translateX(20px);opacity:1;background:#fff}
+.stepper{display:inline-flex;align-items:center;gap:4px;border-radius:999px;background:var(--fill);padding:3px}
+.stepper button{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;color:var(--text)}
+.stepper button:active{background:var(--fill2)}
+.stepper button .ic{width:16px;height:16px}
+.stepper .val{min-width:44px;text-align:center;font-size:16px}
+.stepper .val small{font-size:12px;color:var(--sub);margin-left:1px}
+.stepper.xl .val{font-size:26px;font-weight:300;min-width:84px}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:30px;background:transparent;--p:50%;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:3px;border-radius:3px;background:linear-gradient(to right,var(--mist) var(--p),var(--line2) var(--p))}
+input[type=range]::-moz-range-track{height:3px;border-radius:3px;background:var(--line2)}
+input[type=range]::-moz-range-progress{height:3px;border-radius:3px;background:var(--mist)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--text);margin-top:-9.5px;box-shadow:0 2px 10px rgba(0,0,0,.25);transition:transform .2s}
+input[type=range]:active::-webkit-slider-thumb{transform:scale(1.12)}
+input[type=range]::-moz-range-thumb{width:22px;height:22px;border:0;border-radius:50%;background:var(--text)}
+select{appearance:none;-webkit-appearance:none;background:var(--fill) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2384949E' stroke-width='1.6'%3E%3Cpath d='M7 10l5 5 5-5'/%3E%3C/svg%3E") no-repeat right 10px center/18px;border:0;border-radius:12px;height:42px;padding:0 36px 0 14px;max-width:100%;font-size:14px}
+select option{background:var(--sheet);color:var(--text)}
+textarea{width:100%;min-height:110px;resize:vertical;border:1px solid var(--line2);background:var(--fill);border-radius:16px;padding:14px 16px;font-size:15px;line-height:1.6}
+textarea:focus-visible{outline:none;border-color:var(--teal)}
+
+.group{border-top:1px solid var(--line)}
+.row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:15px 0;border-bottom:1px solid var(--line);min-height:62px}
+.row.col{flex-direction:column;align-items:stretch;gap:12px}
+.row-txt{min-width:0;flex:1}
+.row-txt>span{display:block;font-size:15px}
+.row-txt small{display:block;color:var(--sub);font-size:12.5px;margin-top:2px;line-height:1.5}
+.row-link{display:flex;align-items:center;gap:16px;width:100%;text-align:left;padding:18px 0;border-bottom:1px solid var(--line);transition:opacity .2s}
+.row-link:active{opacity:.6}
+.row-link>.ic:first-child{color:var(--mist)}
+.row-link span{flex:1;min-width:0}
+.row-link strong{display:block;font-weight:500;font-size:15.5px}
+.row-link small{display:block;color:var(--sub);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row-link .chev{width:18px;height:18px;color:var(--faint)}
+
+/* ---------- Today ---------- */
+.today-head{padding-top:calc(54px + env(safe-area-inset-top))}
+.greet{font-family:var(--serif);font-weight:400;font-size:clamp(31px,8.6vw,42px);line-height:1.28;letter-spacing:-.025em;margin-top:14px;text-shadow:0 2px 30px rgba(0,0,0,.18)}
+[data-theme=light] .greet{text-shadow:none}
+.greet-sub{color:var(--mist);margin-top:10px;font-size:15.5px}
+[data-theme=dark] .greet-sub{color:rgba(234,241,239,.72)}
+.hero{height:clamp(140px,31vh,330px)}
+.today-body{position:relative;padding-top:64px}
+.today-body::before{content:"";position:absolute;z-index:-1;left:calc(50% - 100vw);width:200vw;top:-30px;bottom:-400px;background:linear-gradient(to bottom,rgba(0,0,0,0),var(--fade) 150px);pointer-events:none;transition:background .6s}
+.rec{position:relative}
+.rec-title{font-family:var(--serif);font-weight:400;font-size:28px;line-height:1.35;margin-top:10px}
+.rec-desc{color:var(--sub);margin-top:6px;max-width:34ch}
+.rec-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:22px}
+.rec-foot .meta{color:var(--sub);font-size:14px}
+.today-stats{display:flex;gap:32px;margin-top:44px;padding-top:24px;border-top:1px solid var(--line)}
+.today-stats .label{display:block;font-size:12.5px;color:var(--sub)}
+.big{display:block;font-size:30px;font-weight:250;line-height:1.3;margin-top:2px;letter-spacing:-.02em}
+.big small{font-size:13px;color:var(--sub);margin-left:3px;font-weight:400;letter-spacing:0}
+.quick-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.quick-btn{display:flex;flex-direction:column;align-items:flex-start;gap:18px;padding:18px;border-radius:22px;background:var(--fill);text-align:left;transition:transform .25s var(--ease),background-color .3s}
+.quick-btn:hover{background:var(--fill2)}
+.quick-btn:active{transform:scale(.97)}
+.quick-btn .ic{color:var(--mist);width:24px;height:24px}
+.quick-btn strong{display:block;font-weight:500;font-size:15.5px}
+.quick-btn small{display:block;color:var(--sub);font-size:12.5px;margin-top:1px}
+@media (min-width:560px){.quick-grid{grid-template-columns:repeat(4,1fr)}}
+
+/* ---------- Library ---------- */
+.search{display:flex;align-items:center;gap:10px;height:50px;padding:0 6px 0 16px;border-radius:18px;background:var(--fill);transition:background-color .3s}
+.search:focus-within{background:var(--fill2)}
+.search .ic{color:var(--sub);width:19px;height:19px}
+.search input{flex:1;min-width:0;height:100%;background:none;border:0;font-size:16px;outline:none}
+.search input::placeholder{color:var(--faint)}
+.filter-btn{position:relative}
+.filter-btn[data-count]::after{content:attr(data-count);position:absolute;top:6px;right:4px;min-width:16px;height:16px;border-radius:8px;background:var(--teal);color:var(--bg);font-size:10px;display:grid;place-items:center;font-weight:600}
+.cat-row{display:flex;gap:8px;overflow-x:auto;margin:16px -22px 0;padding:2px 22px 4px;scrollbar-width:none;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity}
+.cat-row::-webkit-scrollbar{display:none}
+.cat-row .chip{scroll-snap-align:start}
+.lib-count{font-size:13px;color:var(--sub);margin:26px 0 4px}
+.cat-sec h3{font-family:var(--serif);font-weight:400;font-size:21px;margin:42px 0 2px}
+.cat-sec>p{color:var(--sub);font-size:13.5px;margin-bottom:8px}
+.prog-list{list-style:none}
+.prog-list li{display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--line)}
+.prog-list li:last-child{border-bottom:0}
+.prog{flex:1;display:flex;gap:15px;align-items:center;text-align:left;padding:13px 0;min-width:0;transition:opacity .2s}
+.prog:active{opacity:.6}
+.thumb{width:62px;height:62px;border-radius:17px;object-fit:cover;flex:none;background:var(--fill2)}
+.prog-txt{min-width:0;flex:1}
+.prog-txt strong{display:block;font-weight:500;font-size:16px}
+.prog-txt small{display:block;color:var(--sub);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prog-txt em{display:block;font-style:normal;font-size:12px;color:var(--faint);margin-top:2px}
+.fav-btn{width:44px;height:44px;display:grid;place-items:center;color:var(--faint);flex:none}
+.fav-btn .ic{width:20px;height:20px;transition:transform .35s var(--ease-out)}
+.fav-btn[aria-pressed=true]{color:var(--teal)}
+.fav-btn[aria-pressed=true] .ic{fill:currentColor;transform:scale(1.08)}
+.empty{padding:56px 0;text-align:center;color:var(--sub)}
+.empty .serif{font-size:20px;color:var(--text);margin-bottom:6px;display:block}
+
+/* ---------- Pages (detail / sleep) ---------- */
+.page{position:fixed;inset:0;z-index:40;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;background:var(--bg);opacity:0;transform:translateY(28px);visibility:hidden;transition:opacity .5s var(--ease),transform .55s var(--ease-out),visibility 0s .55s}
+.page.open{opacity:1;transform:none;visibility:visible;transition:opacity .5s var(--ease),transform .55s var(--ease-out),visibility 0s}
+.d-hero{position:relative;height:clamp(300px,48vh,460px);overflow:hidden}
+.d-hero canvas{position:absolute;inset:0;width:100%;height:100%}
+.d-hero-fade{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0) 40%,var(--bg) 98%)}
+.d-top{position:absolute;top:0;left:0;right:0;display:flex;justify-content:space-between;padding:calc(12px + env(safe-area-inset-top)) 14px 0;z-index:2}
+.d-hero-txt{position:absolute;left:0;right:0;bottom:6px;padding:0 22px;max-width:580px;margin:0 auto}
+.d-hero-txt h1{font-family:var(--serif);font-weight:400;font-size:clamp(32px,9vw,42px);line-height:1.25;margin-top:8px}
+.d-body{max-width:580px;margin:0 auto;padding:18px 22px calc(130px + env(safe-area-inset-bottom))}
+.d-desc{font-size:16.5px;line-height:1.75;color:var(--text);opacity:.88}
+.d-meta{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:26px}
+.d-meta dt{font-size:12.5px;color:var(--sub)}
+.d-meta dd{font-size:14.5px;margin-top:2px}
+.steps{list-style:none;counter-reset:s}
+.steps li{counter-increment:s;display:flex;gap:16px;padding:12px 0;border-bottom:1px solid var(--line);align-items:baseline}
+.steps li::before{content:counter(s,decimal-leading-zero);font-size:12px;color:var(--faint);font-variant-numeric:tabular-nums;width:20px;flex:none}
+.steps li:last-child{border-bottom:0}
+.steps small{display:block;color:var(--sub);font-size:13px}
+.time-pick{display:flex;flex-direction:column;align-items:flex-start;gap:14px}
+.themes{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.theme-sw{display:flex;flex-direction:column;gap:7px;align-items:stretch;text-align:left;font-size:11.5px;color:var(--sub);min-width:0}
+.theme-sw img{width:100%;aspect-ratio:3/4;border-radius:14px;object-fit:cover;outline:1.5px solid transparent;outline-offset:2px;transition:outline-color .3s,transform .3s var(--ease)}
+.theme-sw span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.theme-sw[aria-checked=true] img{outline-color:var(--text)}
+.theme-sw[aria-checked=true]{color:var(--text)}
+.theme-sw:active img{transform:scale(.96)}
+.cta-bar{position:fixed;left:0;right:0;bottom:0;z-index:41;padding:18px 22px calc(18px + env(safe-area-inset-bottom));background:linear-gradient(to top,var(--bg) 55%,rgba(0,0,0,0));pointer-events:none}
+.cta-bar .btn{pointer-events:auto;max-width:536px;margin:0 auto;display:flex;width:100%}
+.note{font-size:13px;color:var(--sub);line-height:1.65;padding:14px 16px;border-radius:16px;background:var(--fill);margin-top:12px}
+.routine{list-style:none;counter-reset:r}
+.routine li{counter-increment:r;padding:14px 0;border-bottom:1px solid var(--line);display:flex;gap:16px}
+.routine li::before{content:counter(r);font-family:var(--serif);color:var(--mist);width:14px;flex:none}
+.routine small{display:block;color:var(--sub);font-size:13px}
+
+/* ---------- Breath ---------- */
+.b-stage{position:relative;width:min(80vw,300px);aspect-ratio:1;margin:4px auto 0}
+.b-stage canvas{width:100%;height:100%;display:block}
+.b-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none}
+.b-center .ph{font-size:13px;letter-spacing:.24em;color:var(--mist);padding-left:.24em}
+.b-center .ct{font-size:44px;font-weight:200;line-height:1.1}
+.pat-list{list-style:none}
+.pat{display:flex;align-items:center;gap:14px;width:100%;text-align:left;padding:15px 0;border-bottom:1px solid var(--line)}
+.pat .dot{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--line2);flex:none;display:grid;place-items:center;transition:border-color .3s}
+.pat .dot::after{content:"";width:10px;height:10px;border-radius:50%;background:var(--text);transform:scale(0);transition:transform .35s var(--ease-out)}
+.pat[aria-checked=true] .dot{border-color:var(--text)}
+.pat[aria-checked=true] .dot::after{transform:scale(1)}
+.pat span{flex:1}
+.pat strong{display:block;font-weight:500}
+.pat small{display:block;color:var(--sub);font-size:13px}
+.custom-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 12px;padding:16px 0 4px}
+.custom-grid label{display:flex;flex-direction:column;gap:8px;font-size:13px;color:var(--sub)}
+
+/* ---------- Records ---------- */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--line)}
+.stat{padding:18px 0 16px;border-bottom:1px solid var(--line);min-width:0}
+.stat:nth-child(odd){padding-right:14px}
+.stat .label{font-size:12.5px;color:var(--sub)}
+.stat .val{display:block;font-size:27px;font-weight:250;line-height:1.35;margin-top:4px;letter-spacing:-.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stat .val small{font-size:13px;color:var(--sub);margin:0 4px 0 2px;font-weight:400;letter-spacing:0}
+.stat .val.txt{font-size:17px;font-weight:400;font-family:var(--serif);padding-top:8px}
+.bars{display:flex;align-items:stretch;gap:8px;height:190px}
+.bar{flex:1;display:flex;flex-direction:column;align-items:center;min-width:0}
+.bar-track{position:relative;flex:1;width:100%;max-width:30px;display:flex;align-items:flex-end}
+.bar-fill{width:100%;height:0;min-height:3px;border-radius:9px 9px 4px 4px;background:linear-gradient(to top,rgba(var(--tr),.28),rgba(var(--tr),.7));transition:height 1s var(--ease-out)}
+.bar.today .bar-fill{background:linear-gradient(to top,rgba(var(--tr),.45),rgba(var(--tr),.95))}
+.bar-lab{font-size:12px;color:var(--sub);margin-top:9px}
+.bar.today .bar-lab{color:var(--text)}
+.bar-tip{position:absolute;left:50%;bottom:calc(var(--h,0) * 100% + 8px);transform:translate(-50%,4px);font-size:11.5px;white-space:nowrap;color:var(--text);opacity:0;transition:opacity .3s,transform .3s var(--ease);pointer-events:none}
+.bar.on .bar-tip,.bar:focus-visible .bar-tip{opacity:1;transform:translate(-50%,0)}
+@media (hover:hover){.bar:hover .bar-tip{opacity:1;transform:translate(-50%,0)}}
+.heat-wrap{display:flex;gap:8px}
+.heat-days{display:grid;grid-template-rows:repeat(7,1fr);gap:3px;font-size:10px;color:var(--faint);line-height:1}
+.heat-days span{display:flex;align-items:center}
+.heat{flex:1;display:grid;grid-template-rows:repeat(7,auto);grid-auto-flow:column;grid-auto-columns:1fr;gap:3px}
+.cell{aspect-ratio:1;border-radius:3.5px;background:var(--fill);transition:transform .2s}
+.cell:active{transform:scale(.85)}
+.cell[data-l="1"]{background:rgba(var(--tr),.24)}
+.cell[data-l="2"]{background:rgba(var(--tr),.42)}
+.cell[data-l="3"]{background:rgba(var(--tr),.64)}
+.cell[data-l="4"]{background:rgba(var(--tr),.9)}
+.cell.future{visibility:hidden}
+.cell.is-today{box-shadow:inset 0 0 0 1px var(--line2)}
+.legend{display:flex;align-items:center;gap:4px;justify-content:flex-end;font-size:11px;color:var(--faint);margin-top:10px}
+.legend i{width:10px;height:10px;border-radius:3px;background:var(--fill)}
+.jr-list{list-style:none}
+.jr{padding:16px 0;border-bottom:1px solid var(--line)}
+.jr-head{display:flex;justify-content:space-between;font-size:12.5px;color:var(--sub)}
+.jr-title{margin-top:3px;font-size:15.5px}
+.jr-title span{color:var(--sub);font-size:14px}
+.tag{display:inline-block;font-size:12px;padding:2px 10px;border-radius:999px;background:var(--fill2);color:var(--text);margin-top:8px}
+.tag.soft{background:none;border:1px solid var(--line2);color:var(--sub)}
+.jr-note{margin-top:8px;color:var(--text);opacity:.85;font-size:14.5px;white-space:pre-wrap}
+.jr-actions{display:flex;gap:14px;margin-top:6px}
+.jr-actions button{font-size:13px;color:var(--sub);padding:6px 0}
+.data-actions{display:flex;flex-wrap:wrap;gap:8px}
+
+/* ---------- Sheets ---------- */
+.sheet-wrap{position:fixed;inset:0;z-index:70}
+.backdrop{position:absolute;inset:0;background:rgba(4,8,12,.5);opacity:0;transition:opacity .45s var(--ease)}
+[data-theme=light] .backdrop{background:rgba(60,55,45,.28)}
+.sheet{position:absolute;left:0;right:0;bottom:0;margin:0 auto;max-width:580px;max-height:90vh;max-height:90dvh;overflow-y:auto;overscroll-behavior:contain;background:var(--sheet);border-radius:30px 30px 0 0;padding:10px 24px calc(26px + env(safe-area-inset-bottom));transform:translateY(105%);transition:transform .55s var(--ease-out);box-shadow:var(--shadow)}
+.sheet-wrap.open .backdrop{opacity:1}
+.sheet-wrap.open .sheet{transform:none}
+.grabber{width:38px;height:4px;border-radius:2px;background:var(--line2);margin:0 auto 18px}
+.sheet-title{font-family:var(--serif);font-weight:400;font-size:24px;line-height:1.35}
+.sheet-sub{color:var(--sub);margin-top:6px;font-size:14px}
+.sheet-actions{display:flex;gap:10px;margin-top:26px}
+.sheet-actions .btn{flex:1}
+.mix-row{display:block;padding:12px 0;border-bottom:1px solid var(--line)}
+.mix-top{display:flex;justify-content:space-between;font-size:14.5px}
+.mix-top .num{color:var(--sub);font-size:13px}
+.mood-grid{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 14px}
+@media (min-width:900px){
+  .sheet{bottom:50%;border-radius:28px;transform:translateY(calc(50% + 30px));opacity:0;transition:transform .5s var(--ease-out),opacity .4s var(--ease);max-height:84vh}
+  .sheet-wrap.open .sheet{transform:translateY(50%);opacity:1}
+  .grabber{display:none}
+  .sheet{padding-top:28px}
+}
+
+/* toast */
+#toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom));z-index:90;transform:translate(-50%,12px);opacity:0;max-width:min(88vw,420px);padding:12px 18px;border-radius:16px;background:var(--glass);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);border:1px solid var(--line);font-size:14px;text-align:center;transition:opacity .4s var(--ease),transform .5s var(--ease-out);pointer-events:none}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+body.immersive #toast{bottom:calc(30px + env(safe-area-inset-bottom))}
+
+/* ---------- Player ---------- */
+#player{position:fixed;inset:0;z-index:50;opacity:0;transition:opacity .7s var(--ease);-webkit-user-select:none;user-select:none;overflow:hidden;color:var(--text)}
+#player.in{opacity:1}
+.p-shade{position:absolute;inset:0;background:radial-gradient(130% 85% at 50% 42%,rgba(11,17,24,.15),rgba(11,17,24,.66));transition:background .8s}
+[data-theme=light] .p-shade{background:radial-gradient(130% 85% at 50% 42%,rgba(243,239,230,0),rgba(243,239,230,.45))}
+#player.sleep .p-shade{background:radial-gradient(120% 80% at 50% 40%,rgba(4,7,12,.55),rgba(3,5,9,.9))}
+.p-glow{position:absolute;inset:0;background:radial-gradient(70% 55% at 50% 42%,rgba(234,241,239,.16),rgba(234,241,239,0) 70%);opacity:0;transition:opacity 4s var(--ease)}
+[data-theme=light] .p-glow{background:radial-gradient(70% 55% at 50% 42%,rgba(255,255,255,.6),rgba(255,255,255,0) 70%)}
+#player.done .p-glow{opacity:1}
+#player.sleep.done .p-glow{opacity:.25}
+.p-top{position:absolute;top:0;left:0;right:0;z-index:3;display:flex;justify-content:space-between;align-items:center;padding:calc(10px + env(safe-area-inset-top)) max(14px,env(safe-area-inset-right)) 0 max(22px,env(safe-area-inset-left))}
+.p-title{display:flex;flex-direction:column;min-width:0}
+.p-title span{font-size:11.5px;letter-spacing:.18em;color:var(--sub)}
+.p-title strong{font-weight:500;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.p-top-actions{display:flex;gap:2px}
+.icon-btn[aria-pressed=true]{background:var(--fill2)}
+.p-stage{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px 150px;transition:opacity 2s var(--ease)}
+.p-orb{position:relative;width:min(84vw,50vh,540px);aspect-ratio:1;opacity:0;transform:scale(.9);transition:opacity 1.4s var(--ease),transform 1.8s var(--ease-out)}
+#player.orb-in .p-orb{opacity:1;transform:none}
+.p-orb canvas{width:100%;height:100%;display:block}
+.p-center{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;transition:opacity .6s}
+#player.kind-breath .p-center,#player.text-only .p-center{display:flex}
+#p-phase{font-size:14px;letter-spacing:.28em;padding-left:.28em;color:var(--mist);transition:opacity .4s}
+#p-count{font-size:clamp(46px,13vw,64px);font-weight:200;line-height:1.1}
+.p-guide{min-height:3.4em;max-width:26ch;text-align:center;font-family:var(--serif);font-size:clamp(18px,4.8vw,22px);line-height:1.65;transition:opacity .6s var(--ease),transform .6s var(--ease);margin-top:-2px}
+.p-guide.fade{opacity:0;transform:translateY(5px)}
+.p-sub{font-size:12.5px;color:var(--sub);letter-spacing:.06em;min-height:1.4em;margin-top:4px}
+.p-bottom{position:absolute;left:0;right:0;bottom:0;z-index:3;padding:0 24px calc(26px + env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:center;gap:14px}
+.p-time{font-size:15px;color:var(--mist);letter-spacing:.05em}
+.p-progress{width:min(300px,64vw);height:2px;background:var(--line2);border-radius:2px;overflow:hidden}
+.p-progress i{display:block;height:100%;background:var(--mist);transform-origin:left;transform:scaleX(0)}
+.p-controls{display:flex;align-items:center;gap:26px;margin-top:2px}
+.play-btn{width:74px;height:74px;border-radius:50%;display:grid;place-items:center;background:var(--fill2);border:1px solid var(--line2);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);transition:transform .25s var(--ease),background-color .3s}
+.play-btn:active{transform:scale(.94)}
+.play-btn .ic{width:26px;height:26px}
+.play-btn .ic.fillic{fill:currentColor;stroke:none}
+.p-extra{display:flex;gap:8px;min-height:32px}
+.p-ui{transition:opacity .7s var(--ease),transform .7s var(--ease)}
+#player.idle .p-ui{opacity:0;pointer-events:none}
+#player.idle .p-bottom{transform:translateY(10px)}
+#player.zen .p-ui{opacity:0;pointer-events:none}
+#player.zen.reveal .p-ui{opacity:1;pointer-events:auto;transform:none}
+#player.zen .p-guide,#player.zen .p-sub{opacity:0}
+#player.zen.hide-time .p-time{visibility:hidden}
+#player.text-only .p-orb canvas{visibility:hidden}
+#player.text-only .p-orb{width:min(70vw,260px)}
+#player.sleep .p-guide{opacity:.62;font-size:18px}
+#player.sleep .p-guide.fade{opacity:0}
+#player.done .p-stage{opacity:.32}
+#player.done .p-guide,#player.done .p-sub{opacity:0}
+#player.done .p-ui{opacity:0;pointer-events:none}
+.p-hint{position:absolute;left:0;right:0;bottom:calc(36px + env(safe-area-inset-bottom));text-align:center;font-size:12.5px;color:var(--sub);z-index:3;opacity:0;transition:opacity .8s;pointer-events:none}
+.p-hint.show{opacity:1}
+.p-done{position:absolute;inset:0;z-index:4;display:flex;align-items:center;justify-content:center;padding:24px;overflow-y:auto}
+.done-inner{max-width:420px;width:100%;text-align:center;animation:rise 1.2s var(--ease-out) both}
+.done-title{font-family:var(--serif);font-weight:400;font-size:clamp(25px,6.6vw,30px);line-height:1.45;margin-top:12px}
+.done-meta{color:var(--sub);margin-top:10px;font-size:14px}
+.done-inner .mood-grid{justify-content:center}
+.done-inner textarea{min-height:88px;text-align:left}
+.done-actions{display:flex;flex-direction:column;gap:6px;margin-top:20px;align-items:center}
+
+/* ---------- Onboarding ---------- */
+#onboard{position:fixed;inset:0;z-index:80;display:flex;flex-direction:column;opacity:0;transition:opacity .6s var(--ease)}
+#onboard.in{opacity:1}
+#onboard .ob-shade{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0) 20%,var(--fade) 72%)}
+.ob-top{position:relative;display:flex;justify-content:space-between;align-items:center;padding:calc(14px + env(safe-area-inset-top)) 18px 0 24px}
+.ob-dots{display:flex;gap:6px}
+.ob-dots i{width:6px;height:6px;border-radius:3px;background:var(--line2);transition:width .5s var(--ease-out),background-color .4s}
+.ob-dots i.on{width:22px;background:var(--text)}
+.ob-body{position:relative;flex:1;display:flex;flex-direction:column;justify-content:flex-end;max-width:520px;width:100%;margin:0 auto;padding:0 24px calc(28px + env(safe-area-inset-bottom))}
+.ob-step{animation:rise .7s var(--ease-out) both}
+.ob-step h2{font-family:var(--serif);font-weight:400;font-size:clamp(28px,8vw,36px);line-height:1.35}
+.ob-step p{color:var(--sub);margin-top:10px}
+.ob-step .chips{margin-top:24px}
+.ob-step .chip{height:44px;padding:0 18px;font-size:15px}
+.ob-actions{display:flex;justify-content:space-between;align-items:center;margin-top:34px}
+
+/* ---------- Desktop ---------- */
+@media (min-width:1024px){
+  #app{display:grid;grid-template-columns:232px minmax(0,1fr)}
+  #nav{position:sticky;top:0;height:100vh;padding:40px 18px;left:auto;right:auto;bottom:auto;pointer-events:auto;z-index:20}
+  .brand{display:block;padding:0 14px 36px}
+  .brand b{font-size:15px;letter-spacing:.42em;font-weight:500}
+  .brand span{display:block;font-family:var(--serif);color:var(--sub);font-size:13px;margin-top:4px}
+  .nav-inner{height:auto;grid-template-columns:1fr;grid-auto-rows:52px;background:none;border:0;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none;max-width:none;border-radius:0}
+  .nav-ind{top:0;bottom:auto;left:0;width:100%;height:52px;transform:translateY(calc(var(--i,0) * 100%))}
+  .nav-ind::after{inset:4px 0;border-radius:14px}
+  .nav-btn{flex-direction:row;justify-content:flex-start;gap:14px;padding:0 16px;font-size:14.5px}
+  #main{width:100%;padding-bottom:80px}
+  #toast{bottom:40px}
+  .cat-row{margin:16px 0 0;padding:2px 0 4px;flex-wrap:wrap;overflow:visible}
+}
+@media (min-width:1320px){
+  #app{grid-template-columns:232px minmax(0,1fr) 300px}
+  #side{display:block;position:sticky;top:0;height:100vh;padding:56px 28px 40px 8px;overflow-y:auto}
+  .side-block{padding:20px 0;border-bottom:1px solid var(--line)}
+  .side-block:first-child{padding-top:0}
+  .side-block .label{font-size:12.5px;color:var(--sub)}
+}
+@media (max-width:360px){
+  #main{padding-left:16px;padding-right:16px}
+  .today-stats{gap:20px}
+  .big{font-size:26px}
+  .themes{grid-template-columns:repeat(3,1fr)}
+}
+
+/* motion reduce */
+[data-motion=reduce] *,[data-motion=reduce] *::before,[data-motion=reduce] *::after{animation-duration:.001ms!important;animation-delay:0s!important;transition-duration:.15s!important}
+</style>
+</head>
+<body data-tab="today">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-today" viewBox="0 0 24 24"><path d="M3 17.5h18M7 20.5h10"/><path d="M6.5 14.5a5.5 5.5 0 0 1 11 0"/><path d="M12 4v2.2M5.2 7.2l1.5 1.5M18.8 7.2l-1.5 1.5"/></symbol>
+    <symbol id="i-med" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.2"/></symbol>
+    <symbol id="i-breath" viewBox="0 0 24 24"><path d="M3 9.5h11.5a3 3 0 1 0-3-3"/><path d="M3 13.5h15a3 3 0 1 1-3 3"/><path d="M3 17.5h6"/></symbol>
+    <symbol id="i-records" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="3.5"/><path d="M8.5 3v4M15.5 3v4M4 10.5h16"/><path d="M8.5 14.5h.01M12 14.5h.01M15.5 14.5h.01" stroke-width="2.2"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><path d="M4 7.5h9.5M18.5 7.5H20M4 16.5h3.5M12.5 16.5H20"/><circle cx="16" cy="7.5" r="2.3"/><circle cx="10" cy="16.5" r="2.3"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.8v12.4a.8.8 0 0 0 1.2.7l10.2-6.2a.8.8 0 0 0 0-1.4L9.2 5.1A.8.8 0 0 0 8 5.8z"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24"><path d="M9 6v12M15 6v12" stroke-width="2"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></symbol>
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="M14.5 5.5L8 12l6.5 6.5"/></symbol>
+    <symbol id="i-chev" viewBox="0 0 24 24"><path d="M9.5 5.5L16 12l-6.5 6.5"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 19.5s-7-4.3-7-9.6A3.9 3.9 0 0 1 12 7.6a3.9 3.9 0 0 1 7 2.3c0 5.3-7 9.6-7 9.6z"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.3-4.3"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M19 14.6A7.6 7.6 0 0 1 9.4 5a7.6 7.6 0 1 0 9.6 9.6z"/></symbol>
+    <symbol id="i-sound" viewBox="0 0 24 24"><path d="M4 10.5v3M8 7.5v9M12 4.5v15M16 8.5v7M20 11v2"/></symbol>
+    <symbol id="i-zen" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.6"/><path d="M12 3.5v1.8M12 18.7v1.8M3.5 12h1.8M18.7 12h1.8" opacity=".7"/></symbol>
+    <symbol id="i-restart" viewBox="0 0 24 24"><path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3"/><path d="M4.5 4.5v4h4"/></symbol>
+    <symbol id="i-filter" viewBox="0 0 24 24"><path d="M4 7h16M7 12h10M10 17h4"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5.5v13M5.5 12h13"/></symbol>
+    <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5.5 12h13"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19.5h14"/></symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 15.5V4.5M7.5 9L12 4.5 16.5 9M5 19.5h14"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M5 7h14M10 7V5h4v2M7 7l.9 12h8.2L17 7"/></symbol>
+    <symbol id="i-leaf" viewBox="0 0 24 24"><path d="M5 19c0-8 5-13.5 14-14 0 9-5 14-13 14z"/><path d="M5 19l7.5-7.5"/></symbol>
+    <symbol id="i-focus" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="8.5" opacity=".45"/></symbol>
+    <symbol id="i-inf" viewBox="0 0 24 24"><path d="M7.5 9a3 3 0 1 0 0 6c3 0 6-6 9-6a3 3 0 1 1 0 6c-3 0-6-6-9-6z"/></symbol>
+    <symbol id="i-expand" viewBox="0 0 24 24"><path d="M4.5 9V4.5H9M19.5 9V4.5H15M4.5 15v4.5H9M19.5 15v4.5H15"/></symbol>
+  </defs>
+</svg>
+
+<canvas id="scene" aria-hidden="true"></canvas>
+<div id="veil" aria-hidden="true"></div>
+
+<div id="app">
+  <nav id="nav" aria-label="주 메뉴">
+    <div class="brand" aria-hidden="true"><b>GOYO</b><span>고요</span></div>
+    <div class="nav-inner" id="nav-inner">
+      <span class="nav-ind" aria-hidden="true"></span>
+      <button class="nav-btn" data-act="tab" data-tab="today" aria-current="page"><svg class="ic"><use href="#i-today"/></svg><span>오늘</span></button>
+      <button class="nav-btn" data-act="tab" data-tab="library"><svg class="ic"><use href="#i-med"/></svg><span>명상</span></button>
+      <button class="nav-btn" data-act="tab" data-tab="breath"><svg class="ic"><use href="#i-breath"/></svg><span>호흡</span></button>
+      <button class="nav-btn" data-act="tab" data-tab="records"><svg class="ic"><use href="#i-records"/></svg><span>기록</span></button>
+      <button class="nav-btn" data-act="tab" data-tab="settings"><svg class="ic"><use href="#i-settings"/></svg><span>설정</span></button>
+    </div>
+  </nav>
+  <main id="main">
+    <section class="screen active" id="s-today" aria-label="오늘"></section>
+    <section class="screen" id="s-library" aria-label="명상"></section>
+    <section class="screen" id="s-breath" aria-label="호흡"></section>
+    <section class="screen" id="s-records" aria-label="기록"></section>
+    <section class="screen" id="s-settings" aria-label="설정"></section>
+  </main>
+  <aside id="side" aria-label="요약"></aside>
+</div>
+
+<div id="detail" class="page" role="dialog" aria-modal="true" aria-label="명상 상세"></div>
+<div id="sleep" class="page force-dark" role="dialog" aria-modal="true" aria-label="수면 모드"></div>
+
+<div id="player" role="dialog" aria-modal="true" aria-label="명상 플레이어" hidden>
+  <div class="p-shade"></div>
+  <div class="p-glow"></div>
+  <div class="p-top p-ui">
+    <div class="p-title"><span id="p-kind">명상</span><strong id="p-title"></strong></div>
+    <div class="p-top-actions">
+      <button class="icon-btn" data-act="p-zen" id="p-zen" aria-pressed="false" aria-label="Zen 모드"><svg class="ic"><use href="#i-zen"/></svg></button>
+      <button class="icon-btn" data-act="mixer" aria-label="소리 설정"><svg class="ic"><use href="#i-sound"/></svg></button>
+    </div>
+  </div>
+  <div class="p-stage" id="p-stage">
+    <div class="p-orb" id="p-orb">
+      <canvas id="p-canvas" aria-hidden="true"></canvas>
+      <div class="p-center"><span id="p-phase" aria-live="polite"></span><span id="p-count" class="num" aria-hidden="true"></span></div>
+    </div>
+    <p class="p-guide" id="p-guide" aria-live="polite"></p>
+    <p class="p-sub num" id="p-sub"></p>
+  </div>
+  <div class="p-bottom p-ui">
+    <div class="p-time num" id="p-time" aria-label="남은 시간">0:00</div>
+    <div class="p-progress" role="progressbar" aria-label="전체 진행률" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="p-prog"><i id="p-bar"></i></div>
+    <div class="p-controls">
+      <button class="icon-btn lg" data-act="p-restart" aria-label="처음부터 다시 시작"><svg class="ic"><use href="#i-restart"/></svg></button>
+      <button class="play-btn" data-act="p-toggle" id="p-toggle" aria-label="일시정지"><svg class="ic"><use href="#i-pause"/></svg></button>
+      <button class="icon-btn lg" data-act="p-end" aria-label="명상 마치기"><svg class="ic"><use href="#i-close"/></svg></button>
+    </div>
+    <div class="p-extra">
+      <button class="chip sm" data-act="p-holds" id="p-holds" aria-pressed="false" hidden>유지 구간 건너뛰기</button>
+      <button class="chip sm" data-act="p-audio" id="p-audio" hidden>소리 다시 켜기</button>
+    </div>
+  </div>
+  <p class="p-hint" id="p-hint">화면을 누르면 조작 버튼이 나타나요</p>
+  <div class="p-done" id="p-done" hidden></div>
+</div>
+
+<div id="onboard" hidden></div>
+<div id="sheets"></div>
+<div id="toast" role="status" aria-live="polite"></div>
+<input type="file" id="file-import" accept="application/json,.json" hidden>
+<input type="file" id="file-guide" accept="audio/*" hidden>
+<script>
+(() => {
+'use strict';
+
+/* =========================================================
+   Utilities
+   ========================================================= */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const lerp = (a, b, t) => a + (b - a) * t;
+const TAU = Math.PI * 2;
+const DAY = 86400000;
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 9);
+const ic = (name, cls = '') => `<svg class="ic ${cls}" aria-hidden="true"><use href="#i-${name}"/></svg>`;
+const easeIO = p => 0.5 - Math.cos(Math.PI * clamp(p, 0, 1)) / 2;
+const pad2 = n => String(n).padStart(2, '0');
+const dayKey = d => { d = new Date(d); return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`; };
+const startOfDay = d => { d = new Date(d); d.setHours(0, 0, 0, 0); return d; };
+const WD = ['일', '월', '화', '수', '목', '금', '토'];
+function fmtClock(ms) { const s = Math.max(0, Math.ceil(ms / 1000)); return `${Math.floor(s / 60)}:${pad2(s % 60)}`; }
+function fmtDur(sec) {
+  sec = Math.max(0, Math.round(sec));
+  const m = Math.floor(sec / 60), s = sec % 60;
+  if (m === 0) return `${s}초`;
+  if (m < 60) return s ? `${m}분 ${s}초` : `${m}분`;
+  const h = Math.floor(m / 60), mm = m % 60;
+  return mm ? `${h}시간 ${mm}분` : `${h}시간`;
+}
+function durHTML(sec) {
+  const m = Math.floor(sec / 60);
+  if (m < 60) return `${m}<small>분</small>`;
+  const h = Math.floor(m / 60), mm = m % 60;
+  return `${h}<small>시간</small>${mm ? `${mm}<small>분</small>` : ''}`;
+}
+function rgba(c, a) { return `rgba(${c[0] | 0},${c[1] | 0},${c[2] | 0},${a})`; }
+function mixRGB(a, b, t) { return [lerp(a[0], b[0], t), lerp(a[1], b[1], t), lerp(a[2], b[2], t)]; }
+function rng(seed) { let s = (seed * 2654435761) >>> 0 || 1; return () => { s ^= s << 13; s >>>= 0; s ^= s >>> 17; s ^= s << 5; s >>>= 0; return s / 4294967296; }; }
+function noise1(r, n = 64) {
+  const v = Array.from({ length: n }, () => r());
+  return x => { const i = Math.floor(x), f = x - i, a = v[((i % n) + n) % n], b = v[(((i + 1) % n) + n) % n]; const t = (1 - Math.cos(f * Math.PI)) / 2; return a + (b - a) * t; };
+}
+const mq = q => window.matchMedia ? window.matchMedia(q) : { matches: false, addEventListener() {} };
+
+/* =========================================================
+   Storage (safe, validated)
+   ========================================================= */
+const KEY = 'goyo.v1.';
+const Store = {
+  corrupted: false,
+  read(name, fallback, validate) {
+    let raw = null;
+    try { raw = localStorage.getItem(KEY + name); } catch (e) { return fallback; }
+    if (raw == null) return fallback;
+    try {
+      const v = JSON.parse(raw);
+      if (validate && !validate(v)) throw new Error('invalid');
+      return v;
+    } catch (e) {
+      try { localStorage.setItem(KEY + 'backup.' + name, raw); } catch (_) {}
+      this.corrupted = true;
+      return fallback;
+    }
+  },
+  write(name, v) {
+    try { localStorage.setItem(KEY + name, JSON.stringify(v)); return true; }
+    catch (e) { toast('기기에 저장하지 못했어요. 브라우저 저장 공간을 확인해 주세요.'); return false; }
+  },
+  remove(name) { try { localStorage.removeItem(KEY + name); } catch (e) {} }
+};
+
+/* =========================================================
+   Content data
+   ========================================================= */
+const CATS = [
+  ['calm', '마음 안정', '흔들리는 마음을 천천히 가라앉혀요.'],
+  ['focus', '집중', '흩어진 주의를 한곳으로 모아요.'],
+  ['sleep', '수면', '잠들기 전, 하루의 긴장을 내려놓아요.'],
+  ['stress', '스트레스 완화', '몸과 마음에 쌓인 긴장을 풀어요.'],
+  ['morning', '아침 명상', '하루를 고요하게 열어요.'],
+  ['evening', '저녁 명상', '하루를 부드럽게 닫아요.'],
+  ['beginner', '초보자 명상', '처음이어도 괜찮아요. 가볍게 시작해요.'],
+  ['thoughts', '생각 관찰', '생각을 판단하지 않고 바라봐요.'],
+  ['gratitude', '감사 명상', '작은 고마움을 천천히 떠올려요.'],
+  ['nature', '자연 명상', '자연의 소리와 함께 머물러요.'],
+];
+const CAT = Object.fromEntries(CATS.map(c => [c[0], { name: c[1], desc: c[2] }]));
+const LEVEL = { 1: '입문', 2: '중급', 3: '심화' };
+const SOUNDS = [['rain', '잔잔한 비'], ['wind', '숲의 바람'], ['waves', '바다 파도'], ['white', '부드러운 백색소음'], ['brown', '브라운 노이즈'], ['ambient', '몽환적인 앰비언트']];
+const SOUND_NAME = Object.fromEntries(SOUNDS);
+const SOUND_IDS = SOUNDS.map(s => s[0]);
+const PATTERNS = {
+  balance: { name: '균형 호흡', desc: '4초 들숨 · 4초 날숨', in: 4, h1: 0, out: 4, h2: 0 },
+  relax: { name: '편안한 호흡', desc: '4초 들숨 · 6초 날숨', in: 4, h1: 0, out: 6, h2: 0 },
+  box: { name: '박스 호흡', desc: '들숨 · 유지 · 날숨 · 유지, 각 4초', in: 4, h1: 4, out: 4, h2: 4 },
+  custom: { name: '자유 호흡', desc: '나에게 맞는 리듬을 직접 정해요' },
+};
+const MOODS = { calm: '평온함', light: '가벼움', focused: '집중됨', tired: '피곤함', complex: '복잡함' };
+const THEMES = {
+  misty: { name: 'Misty Mountains', ko: '안개 낀 산', desc: '안개가 낀 산과 새벽빛' },
+  lake: { name: 'Moonlit Lake', ko: '달빛 호수', desc: '달빛이 비치는 조용한 호수' },
+  forest: { name: 'Silent Forest', ko: '고요한 숲', desc: '깊고 차분한 숲' },
+  ocean: { name: 'Ocean Horizon', ko: '수평선', desc: '수평선과 느린 파도' },
+  space: { name: 'Deep Space', ko: '깊은 우주', desc: '어두운 하늘과 희미한 별빛' },
+};
+const INTRO = '편안한 자세를 찾고, 눈을 감거나 시선을 살며시 아래로 내려 주세요.';
+const OUTRO = '천천히 손끝과 발끝을 움직여 보세요. 준비가 되면 눈을 떠도 좋아요.';
+const SLEEP_OUTRO = '이제 그대로 편히 쉬어도 괜찮아요.';
+const SLEEP_ROUTINE = [
+  ['몸의 긴장 알아차리기', '이마, 어깨, 손, 다리… 힘이 들어간 곳을 천천히 찾아보세요.'],
+  ['편안한 호흡', '숨을 조금 길게 내쉬며, 몸이 바닥에 가라앉도록 맡겨요.'],
+  ['떠오르는 생각 관찰하기', '생각이 떠오르면 붙잡지 않고 흘러가도록 두세요.'],
+  ['조용한 자연의 소리 듣기', '이제 소리만 남겨 두고, 그대로 쉬어도 괜찮아요.'],
+];
+
+const P = (id, title, category, minutes, level, theme, desc, env, steps, script, mix, pattern = 'relax') =>
+  ({ id, title, category, minutes, level, theme, desc, env, steps, script, mix, pattern });
+const PROGRAMS = [
+  P('still-start', '고요한 시작', 'morning', 5, 1, 'misty', '호흡을 천천히 알아차리며 하루를 시작합니다.', '밝은 창가, 앉은 자세',
+    ['몸을 깨우는 세 번의 깊은 호흡', '호흡의 흐름 따라가기', '오늘의 첫 마음 정하기'],
+    ['코끝으로 들어오는 아침 공기를 느껴 보세요.', '숨이 들어오고 나가는 흐름을 그저 따라가요.', '오늘 하루를 어떤 마음으로 보내고 싶은지 가만히 떠올려 보세요.'], { ambient: .25, wind: .15 }, 'balance'),
+  P('morning-light', '아침 빛 맞이하기', 'morning', 8, 1, 'misty', '몸 구석구석에 아침의 빛이 스며드는 장면을 그려봅니다.', '앉거나 선 자세',
+    ['편안한 자세 잡기', '빛을 따라 몸 살피기', '가볍게 마무리하기'],
+    ['정수리 위로 부드러운 빛이 내려온다고 떠올려 보세요.', '빛이 이마와 어깨를 지나 가슴으로 천천히 퍼져요.', '빛이 닿는 곳마다 긴장이 조금씩 풀립니다.', '몸 전체가 따뜻하고 가벼워지는 것을 느껴 보세요.'], { wind: .2, ambient: .2 }),
+  P('morning-intent', '하루의 마음 정하기', 'morning', 10, 2, 'misty', '오늘 지니고 싶은 태도 하나를 조용히 정합니다.', '조용한 실내',
+    ['호흡으로 마음 모으기', '오늘의 단어 고르기', '단어와 함께 머물기'],
+    ['오늘 하루를 함께할 단어 하나를 떠올려 보세요. 차분함, 다정함, 여유 같은 말도 좋아요.', '숨을 들이쉴 때 그 단어를 마음속으로 불러 보세요.', '내쉴 때는 그 단어가 몸 안에 자리 잡는다고 느껴요.', '정답은 없어요. 지금 떠오른 단어면 충분해요.'], { ambient: .3 }),
+  P('let-thoughts', '생각 흘려보내기', 'thoughts', 10, 2, 'lake', '떠오르는 생각을 판단하지 않고 관찰합니다.', '조용한 실내, 앉은 자세',
+    ['호흡에 머물기', '생각을 알아차리기', '다시 호흡으로 돌아오기'],
+    ['생각이 떠오르면 억지로 밀어내지 않아도 괜찮아요.', '생각을 강물 위의 나뭇잎처럼 바라보세요. 떠오르고, 흘러가요.', '생각을 따라갔다는 것을 알아차렸다면, 그 순간이 이미 명상이에요.', '부드럽게 다시 호흡으로 돌아옵니다.'], { rain: .3, ambient: .15 }),
+  P('clouds-watch', '구름처럼 바라보기', 'thoughts', 12, 3, 'misty', '마음을 넓은 하늘로, 생각을 지나가는 구름으로 바라봅니다.', '눕거나 기대어 앉은 자세',
+    ['넓은 하늘 떠올리기', '생각을 구름처럼 바라보기', '하늘 그 자체로 머물기'],
+    ['마음이 끝없이 넓은 하늘이라고 떠올려 보세요.', '생각과 감정은 그 하늘을 지나가는 구름이에요.', '어떤 구름은 무겁고 어떤 구름은 가벼워요. 모두 지나갑니다.', '구름이 지나가도 하늘은 그대로예요.'], { wind: .3, ambient: .2 }),
+  P('labeling', '이름 붙이고 놓아주기', 'thoughts', 8, 2, 'lake', '떠오른 생각에 짧은 이름을 붙이고 가볍게 놓아줍니다.', '앉은 자세',
+    ['호흡 알아차리기', '생각에 이름 붙이기', '놓아주고 돌아오기'],
+    ['생각이 떠오르면 계획, 기억, 걱정처럼 짧게 이름을 붙여 보세요.', '이름을 붙인 다음에는 그대로 두고 호흡으로 돌아와요.', '같은 생각이 여러 번 찾아와도 괜찮아요. 매번 다정하게 돌아오면 돼요.'], { brown: .25 }),
+  P('deep-night', '깊은 밤', 'sleep', 20, 1, 'space', '잠들기 전 긴장을 내려놓는 조용한 명상입니다.', '누운 자세, 어두운 방',
+    ['누운 자세로 몸 맡기기', '긴 날숨으로 긴장 풀기', '소리와 함께 쉬기'],
+    ['몸이 바닥에 닿아 있는 무게를 느껴 보세요.', '내쉬는 숨마다 몸이 조금 더 무거워져요.', '오늘 하루의 일은 내일의 나에게 맡겨도 괜찮아요.', '이제 아무것도 하지 않아도 돼요.'], { brown: .35, ambient: .12 }),
+  P('body-scan-sleep', '잠들기 전 몸 살피기', 'sleep', 25, 2, 'lake', '발끝부터 머리까지 천천히 몸의 감각을 살핍니다.', '누운 자세',
+    ['발과 다리 살피기', '몸통과 팔 살피기', '얼굴과 머리 풀어주기'],
+    ['발끝에 주의를 두고, 느껴지는 감각을 그대로 알아차려 보세요.', '종아리와 무릎, 허벅지로 천천히 주의를 옮겨 갑니다.', '배와 가슴이 숨에 따라 오르내리는 것을 느껴요.', '어깨와 팔이 바닥으로 녹아내린다고 떠올려 보세요.', '턱과 미간, 눈가의 힘을 살며시 풀어 주세요.'], { rain: .35 }),
+  P('moon-breath', '달빛 호흡', 'sleep', 15, 1, 'lake', '은은한 달빛을 떠올리며 느린 호흡으로 쉬어갑니다.', '누운 자세, 조명을 끈 방',
+    ['달빛 떠올리기', '느린 호흡', '고요 속에 머물기'],
+    ['고요한 호수 위로 은은한 달빛이 비친다고 떠올려 보세요.', '숨을 들이쉬면 달빛이 가슴에 스며들어요.', '내쉬면 하루의 긴장이 호수 위로 잔잔히 퍼져 나가요.'], { waves: .25, ambient: .12 }),
+  P('this-moment', '지금 이 순간', 'calm', 3, 1, 'lake', '짧은 시간 동안 현재의 감각에 집중합니다.', '어디서든',
+    ['멈추기', '감각 알아차리기', '다시 시작하기'],
+    ['하던 일을 잠시 내려놓고, 지금 들리는 소리 하나를 찾아보세요.', '몸이 의자나 바닥에 닿아 있는 감각을 느껴요.', '지금 이 순간, 여기에 있어요.'], { ambient: .25 }),
+  P('settling', '마음 가라앉히기', 'calm', 7, 1, 'lake', '흙탕물이 가라앉듯 마음이 고요해지기를 기다립니다.', '앉은 자세',
+    ['멈추고 앉기', '호흡 바라보기', '고요함 느끼기'],
+    ['흔들린 물병 속 흙이 천천히 가라앉는 모습을 떠올려 보세요.', '아무것도 하지 않아도 물은 스스로 맑아져요.', '마음도 그저 기다려 주면 조금씩 가라앉아요.'], { rain: .2, ambient: .2 }),
+  P('safe-harbor', '잔잔한 물결', 'calm', 12, 2, 'ocean', '파도의 리듬에 호흡을 맞추며 마음을 쉬게 합니다.', '앉거나 누운 자세',
+    ['파도 소리 듣기', '파도에 호흡 맞추기', '고요한 수면 떠올리기'],
+    ['파도가 밀려오고 물러가는 소리를 들어 보세요.', '파도가 밀려올 때 숨을 들이쉬고, 물러갈 때 내쉬어요.', '큰 파도 아래 깊은 바다는 늘 고요해요.', '당신 안에도 그런 고요한 자리가 있어요.'], { waves: .45 }),
+  P('silent-forest', '고요한 숲', 'nature', 15, 1, 'forest', '자연의 소리와 함께 편안하게 머무릅니다.', '조용한 실내 또는 야외',
+    ['숲길 떠올리기', '소리에 귀 기울이기', '숲과 함께 쉬기'],
+    ['키 큰 나무들 사이 오솔길에 서 있다고 떠올려 보세요.', '바람이 나뭇잎을 스치는 소리를 들어 보세요.', '발밑의 부드러운 흙과 서늘한 공기를 느껴요.', '숲은 서두르지 않아요. 당신도 그래도 괜찮아요.'], { wind: .35, rain: .08 }),
+  P('rain-listening', '빗소리에 머물기', 'nature', 10, 1, 'forest', '빗소리에만 주의를 기울이며 머무릅니다.', '앉거나 누운 자세',
+    ['빗소리 듣기', '소리의 결 느끼기', '소리와 함께 쉬기'],
+    ['빗소리에 가만히 귀를 기울여 보세요.', '가까운 빗방울과 먼 빗소리를 구분해 보세요.', '소리를 분석하지 않고 그저 들어요.'], { rain: .45 }),
+  P('ocean-horizon', '수평선 바라보기', 'nature', 12, 2, 'ocean', '끝없는 수평선을 떠올리며 시야와 마음을 넓힙니다.', '앉은 자세',
+    ['수평선 떠올리기', '시야 넓히기', '넓은 마음으로 머물기'],
+    ['눈앞에 끝없이 이어지는 수평선을 떠올려 보세요.', '시선을 부드럽게 풀고, 좌우로 넓게 펼쳐진 공간을 느껴요.', '마음도 수평선처럼 넓어진다고 떠올려 보세요.'], { waves: .4, wind: .12 }),
+  P('focus-anchor', '호흡이라는 닻', 'focus', 10, 2, 'misty', '주의가 흩어질 때마다 호흡으로 돌아오는 연습을 합니다.', '책상 앞, 앉은 자세',
+    ['닻 내리기', '흩어짐 알아차리기', '다시 돌아오기'],
+    ['호흡을 마음의 닻이라고 생각해 보세요.', '코끝이나 배, 숨이 가장 잘 느껴지는 곳 한 곳을 정해요.', '주의가 흘러가면 알아차리고, 다시 그곳으로 돌아옵니다.', '돌아오는 순간마다 집중하는 힘이 조금씩 자라요.'], { brown: .25 }, 'balance'),
+  P('single-point', '한 점에 머물기', 'focus', 15, 3, 'space', '하나의 대상에 주의를 오래 머무르게 합니다.', '조용한 실내',
+    ['대상 정하기', '주의 유지하기', '넓게 풀어주기'],
+    ['마음속에 작은 빛 한 점을 떠올려 보세요.', '그 빛에 주의를 가만히 머물게 해요.', '빛이 흐려지면 다시 또렷하게 떠올리면 돼요.', '이제 주의를 넓게 풀어 몸 전체를 느껴 보세요.'], { brown: .2, ambient: .15 }, 'balance'),
+  P('work-reset', '일 사이의 쉼표', 'focus', 5, 1, 'misty', '일과 일 사이, 머리를 비우고 다시 시작합니다.', '책상 앞',
+    ['화면에서 눈 떼기', '세 번의 깊은 호흡', '다음 일 떠올리기'],
+    ['잠시 화면에서 시선을 떼고 눈을 감아 보세요.', '어깨를 한 번 올렸다가 툭 내려놓아요.', '다음에 할 일 하나만 떠올리고, 나머지는 잠시 두세요.'], { white: .25 }, 'balance'),
+  P('stress-release', '어깨 내려놓기', 'stress', 6, 1, 'forest', '긴장이 머무는 어깨와 목을 부드럽게 풀어줍니다.', '앉은 자세',
+    ['긴장 찾기', '숨으로 풀어주기', '가벼워진 몸 느끼기'],
+    ['어깨가 귀 쪽으로 올라가 있지는 않은지 살펴보세요.', '내쉬는 숨에 어깨를 아래로 천천히 내려놓아요.', '목과 턱의 힘도 함께 풀어 주세요.'], { wind: .25, ambient: .15 }),
+  P('tension-wave', '긴장 흘려보내기', 'stress', 12, 2, 'ocean', '몸의 긴장을 파도에 실어 흘려보냅니다.', '눕거나 앉은 자세',
+    ['몸 살피기', '파도에 긴장 싣기', '가벼움 느끼기'],
+    ['몸에서 가장 긴장된 곳을 찾아보세요.', '숨을 들이쉬며 그곳을 알아차리고, 내쉬며 조금 느슨하게 풀어 줘요.', '물러가는 파도가 긴장을 함께 데려간다고 떠올려 보세요.', '완전히 풀리지 않아도 괜찮아요. 알아차린 것으로 충분해요.'], { waves: .4 }),
+  P('sigh-reset', '길게 내쉬기', 'stress', 4, 1, 'lake', '날숨을 길게 하며 몸에 쉼의 신호를 보냅니다.', '어디서든',
+    ['편하게 들이쉬기', '길게 내쉬기', '천천히 반복하기'],
+    ['코로 편안하게 들이쉬고, 입으로 길게 내쉬어 보세요.', '내쉬는 숨이 들이쉬는 숨보다 조금 길어지도록 해요.', '숨이 불편하면 언제든 편한 리듬으로 돌아와도 괜찮아요.'], { ambient: .2 }),
+  P('evening-close', '하루 닫기', 'evening', 10, 1, 'lake', '오늘 하루를 부드럽게 정리하고 내려놓습니다.', '조명을 낮춘 실내',
+    ['하루 돌아보기', '내려놓기', '쉬는 마음'],
+    ['오늘 하루가 어땠는지 떠올려 보세요. 평가하지 않고 그저 바라봐요.', '오늘의 일 중 내려놓고 싶은 것 하나를 떠올려 보세요.', '숨을 내쉬며 그것을 오늘에 두고 와요.', '이제 쉬어도 괜찮아요.'], { rain: .25, ambient: .15 }),
+  P('evening-review', '오늘을 돌아보기', 'evening', 12, 2, 'forest', '하루의 장면들을 차분히 되짚으며 마음을 정리합니다.', '앉은 자세',
+    ['아침부터 떠올리기', '감정 알아차리기', '다정하게 마무리하기'],
+    ['오늘 아침의 장면부터 천천히 떠올려 보세요.', '그때 느꼈던 감정이 있다면 이름을 붙여 보세요.', '잘한 일도, 아쉬운 일도 그대로 두어요.', '오늘을 살아낸 자신에게 고맙다고 말해 주세요.'], { wind: .2, ambient: .15 }),
+  P('gratitude-three', '세 가지 고마움', 'gratitude', 8, 1, 'misty', '오늘 고마웠던 세 가지를 천천히 떠올립니다.', '앉은 자세',
+    ['첫 번째 고마움', '두 번째 고마움', '세 번째 고마움'],
+    ['오늘 고마웠던 일 하나를 떠올려 보세요. 아주 작은 것도 좋아요.', '두 번째 고마움을 떠올려 보세요. 사람, 장소, 음식, 무엇이든 괜찮아요.', '세 번째 고마움을 떠올리며, 그때의 느낌에 잠시 머물러요.'], { ambient: .3 }),
+  P('kind-wishes', '따뜻한 마음 보내기', 'gratitude', 12, 2, 'forest', '나와 다른 사람에게 따뜻한 바람을 보냅니다.', '앉은 자세',
+    ['나에게', '가까운 사람에게', '모두에게'],
+    ['마음속으로 말해 보세요. 내가 편안하기를.', '이제 가까운 사람 한 명을 떠올리며, 그 사람이 편안하기를 바라 보세요.', '떠오르는 모든 이들이 평온하기를 바라 보세요.', '어색하게 느껴져도 괜찮아요. 마음을 보내는 연습이에요.'], { ambient: .3, wind: .1 }),
+  P('first-steps', '처음 앉아보기', 'beginner', 5, 1, 'misty', '명상이 처음이라면 여기서 시작해 보세요.', '편한 의자',
+    ['자세 잡기', '호흡 느끼기', '알아차림 연습'],
+    ['허리는 편안하게 세우고, 손은 무릎 위에 올려 두세요.', '숨을 바꾸려 하지 말고, 지금의 숨을 그대로 느껴 보세요.', '생각이 떠오르는 건 자연스러운 일이에요. 알아차리고 돌아오면 돼요.'], { ambient: .25 }),
+  P('counting-breath', '숨 세기', 'beginner', 7, 1, 'lake', '하나부터 열까지 숨을 세며 주의를 모읍니다.', '앉은 자세',
+    ['숨 하나 세기', '열까지 세기', '다시 하나부터'],
+    ['내쉬는 숨마다 하나, 둘, 셋, 마음속으로 세어 보세요.', '열까지 세면 다시 하나부터 시작해요.', '숫자를 잊어버려도 괜찮아요. 하나부터 다시 세면 돼요.'], { rain: .2 }, 'balance'),
+  P('posture-ease', '편안한 자세 찾기', 'beginner', 6, 1, 'forest', '긴장 없이 오래 머물 수 있는 자세를 찾아봅니다.', '의자나 방석',
+    ['바닥과의 접촉', '척추 세우기', '힘 빼기'],
+    ['발바닥이나 엉덩이가 바닥에 닿은 감각을 느껴 보세요.', '정수리가 실에 매달린 듯 척추를 살며시 세워요.', '세운 자세는 그대로 두고, 나머지 힘은 모두 풀어 주세요.'], { wind: .2, ambient: .1 }),
+];
+const PROG = Object.fromEntries(PROGRAMS.map(p => [p.id, p]));
+
+/* =========================================================
+   Settings & records state
+   ========================================================= */
+const DEFAULTS = {
+  appearance: 'system', motion: 'system', effects: 'high', scene: 'misty',
+  duration: 10, pattern: 'relax', showGuide: true, alwaysControls: false, textOnly: false,
+  hideTime: false, zenFullscreen: false, chime: true,
+  voice: 'off', voiceURI: '', rate: 0.9,
+  volume: 0.5, mix: { rain: 0, wind: 0.22, waves: 0, white: 0, brown: 0, ambient: 0.18 },
+  fadeIn: 4, fadeOut: 6, goals: [],
+  breath: { pattern: 'relax', custom: { in: 4, h1: 2, out: 6, h2: 0 }, minutes: 5, sound: 'mine', startChime: true, endChime: true, voice: false },
+  sleep: { minutes: 30, routine: true, sound: 'brown', voice: false },
+};
+const ENUMS = {
+  appearance: ['system', 'dark', 'light'], motion: ['system', 'full', 'reduce'], effects: ['high', 'medium', 'low'],
+  scene: Object.keys(THEMES), pattern: Object.keys(PATTERNS), voice: ['off', 'tts', 'upload'],
+};
+function sanitize(def, o, path = '') {
+  if (Array.isArray(def)) return Array.isArray(o) ? o.filter(x => typeof x === 'string').slice(0, 10) : [...def];
+  const out = {};
+  for (const k of Object.keys(def)) {
+    const d = def[k], v = o && typeof o === 'object' ? o[k] : undefined, key = path + k;
+    if (d && typeof d === 'object') out[k] = sanitize(d, v, key + '.');
+    else if (typeof v !== typeof d || (typeof v === 'number' && !Number.isFinite(v))) out[k] = d;
+    else if (ENUMS[key] && !ENUMS[key].includes(v)) out[k] = d;
+    else out[k] = v;
+  }
+  return out;
+}
+function clampSettings(s) {
+  s.duration = clamp(Math.round(s.duration), 1, 120);
+  s.rate = clamp(s.rate, 0.5, 1.4); s.volume = clamp(s.volume, 0, 1);
+  s.fadeIn = clamp(s.fadeIn, 0, 20); s.fadeOut = clamp(s.fadeOut, 0, 30);
+  SOUND_IDS.forEach(k => s.mix[k] = clamp(s.mix[k], 0, 1));
+  const c = s.breath.custom; c.in = clamp(c.in, 2, 12); c.out = clamp(c.out, 2, 14); c.h1 = clamp(c.h1, 0, 10); c.h2 = clamp(c.h2, 0, 10);
+  s.breath.minutes = clamp(s.breath.minutes, 1, 60); s.sleep.minutes = clamp(s.sleep.minutes, 5, 180);
+  if (!['mine', 'none', ...SOUND_IDS].includes(s.breath.sound)) s.breath.sound = 'mine';
+  if (!['none', ...SOUND_IDS].includes(s.sleep.sound)) s.sleep.sound = 'brown';
+  return s;
+}
+function validRecord(r) {
+  return r && typeof r === 'object' && typeof r.id === 'string' && r.id.length > 0 && r.id.length < 80 &&
+    Number.isFinite(r.startedAt) && r.startedAt > 946684800000 && r.startedAt < Date.now() + DAY &&
+    Number.isFinite(r.actualSec) && r.actualSec >= 0 && r.actualSec < 86400 &&
+    typeof r.completed === 'boolean' && ['meditation', 'breath', 'sleep'].includes(r.kind) && typeof r.title === 'string';
+}
+function normRecord(r) {
+  return {
+    id: r.id, kind: r.kind, programId: typeof r.programId === 'string' ? r.programId : null, title: r.title.slice(0, 80),
+    startedAt: r.startedAt, endedAt: Number.isFinite(r.endedAt) ? r.endedAt : r.startedAt + r.actualSec * 1000,
+    plannedSec: Number.isFinite(r.plannedSec) ? Math.round(r.plannedSec) : Math.round(r.actualSec),
+    actualSec: Math.round(r.actualSec), completed: r.completed,
+    mood: MOODS[r.mood] ? r.mood : null, note: typeof r.note === 'string' ? r.note.slice(0, 1000) : '',
+  };
+}
+
+const S = { settings: null, records: [], favs: [] };
+function loadState() {
+  S.settings = clampSettings(sanitize(DEFAULTS, Store.read('settings', {}, v => v && typeof v === 'object')));
+  const recs = Store.read('records', [], Array.isArray);
+  const valid = recs.filter(validRecord);
+  if (valid.length !== recs.length) Store.corrupted = true;
+  S.records = valid.map(normRecord);
+  S.favs = Store.read('favs', [], Array.isArray).filter(id => PROG[id]);
+}
+let saveT = 0;
+const saveSettings = (now) => { clearTimeout(saveT); if (now) Store.write('settings', S.settings); else saveT = setTimeout(() => Store.write('settings', S.settings), 250); };
+const saveRecords = () => Store.write('records', S.records);
+const saveFavs = () => Store.write('favs', S.favs);
+const getPath = (o, p) => p.split('.').reduce((a, k) => a?.[k], o);
+const setPath = (o, p, v) => { const ks = p.split('.'); const last = ks.pop(); ks.reduce((a, k) => a[k], o)[last] = v; };
+
+const Records = {
+  add(r) {
+    const rec = normRecord({ id: uid(), mood: null, note: '', ...r });
+    if (S.records.some(x => x.id === rec.id)) return rec;
+    S.records.push(rec); saveRecords(); return rec;
+  },
+  get(id) { return S.records.find(r => r.id === id); },
+  update(id, patch) { const r = this.get(id); if (!r) return; Object.assign(r, patch); saveRecords(); },
+  remove(id) { S.records = S.records.filter(r => r.id !== id); saveRecords(); },
+  clear() { S.records = []; saveRecords(); },
+};
+function computeStats() {
+  const now = new Date(), done = S.records.filter(r => r.completed);
+  const byDay = {};
+  done.forEach(r => { const k = dayKey(r.startedAt); byDay[k] = (byDay[k] || 0) + r.actualSec; });
+  const today = startOfDay(now);
+  const wk = new Date(today); wk.setDate(wk.getDate() - ((wk.getDay() + 6) % 7));
+  const month = new Date(now.getFullYear(), now.getMonth(), 1);
+  let total = 0, week = 0, monthS = 0; const weekDays = new Set(); const counts = {};
+  done.forEach(r => {
+    total += r.actualSec;
+    if (r.startedAt >= wk.getTime()) { week += r.actualSec; weekDays.add(dayKey(r.startedAt)); }
+    if (r.startedAt >= month.getTime()) monthS += r.actualSec;
+    const key = r.programId || r.title; counts[key] = counts[key] || { n: 0, title: r.title }; counts[key].n++;
+  });
+  let streak = 0; const d = new Date(today);
+  if (!byDay[dayKey(d)]) d.setDate(d.getDate() - 1);
+  while (byDay[dayKey(d)]) { streak++; d.setDate(d.getDate() - 1); }
+  const top = Object.values(counts).sort((a, b) => b.n - a.n)[0];
+  return { total, count: done.length, week, weekDays: weekDays.size, month: monthS, streak, top, byDay, today: byDay[dayKey(now)] || 0 };
+}
+
+/* =========================================================
+   Theme / motion helpers
+   ========================================================= */
+const mqDark = mq('(prefers-color-scheme: light)');
+const mqReduce = mq('(prefers-reduced-motion: reduce)');
+const resolvedMode = () => S.settings.appearance === 'system' ? (mqDark.matches ? 'light' : 'dark') : S.settings.appearance;
+const reducedMotion = () => S.settings.motion === 'reduce' || (S.settings.motion === 'system' && mqReduce.matches);
+const sceneStatic = () => reducedMotion() || S.settings.effects === 'low' || autoLow;
+let autoLow = false;
+
+/* =========================================================
+   Scene renderer — layered living landscape
+   ========================================================= */
+const PAL = {
+  misty: {
+    dark: { sky: ['#0c1622', '#1b2a37', '#45545f', '#7e7a7a'], cel: { x: .68, y: .5, r: .05, rgb: '255,210,180', a: .55 }, stars: 24,
+      ranges: [{ c: '#3a4853', b: .55, a: .13, s: 320, seed: 3 }, { c: '#2b3944', b: .63, a: .15, s: 240, seed: 7 }, { c: '#1e2a34', b: .73, a: .16, s: 190, seed: 13 }, { c: '#131c25', b: .86, a: .14, s: 160, seed: 21 }],
+      fog: '172,186,195', fogA: .24, clouds: { rgb: '205,214,220', a: .07, n: 5 }, parts: { rgb: '234,241,239', n: 34, a: .32 }, vig: '4,8,12', vigA: .45 },
+    light: { sky: ['#9fb2bd', '#c7d0cf', '#e4d9ca', '#efdcc6'], cel: { x: .68, y: .5, r: .06, rgb: '255,246,232', a: .8 }, stars: 0,
+      ranges: [{ c: '#a3b1b2' }, { c: '#869998' }, { c: '#6b8282' }, { c: '#526a6a' }],
+      fog: '244,240,232', fogA: .36, clouds: { rgb: '255,255,255', a: .32, n: 5 }, parts: { rgb: '255,255,255', n: 20, a: .55 }, vig: '110,100,80', vigA: .12 },
+  },
+  lake: {
+    dark: { sky: ['#04080e', '#09141e', '#112130', '#1c3141'], cel: { x: .72, y: .2, r: .03, rgb: '234,241,239', a: .9, moon: 1 }, stars: 140, horizon: .63,
+      ranges: [{ c: '#1b2b39', b: .635, a: .11, s: 260, seed: 5 }, { c: '#132029', b: .64, a: .055, s: 150, seed: 9 }],
+      water: ['#112130', '#050b12'], refl: .4, shimmer: '234,241,239',
+      fog: '130,158,174', fogA: .12, clouds: { rgb: '160,180,195', a: .045, n: 3 }, parts: { rgb: '234,241,239', n: 14, a: .25 }, vig: '2,5,9', vigA: .5 },
+    light: { sky: ['#adbfc9', '#c9d6da', '#e0e6e2', '#edf0ea'], cel: { x: .72, y: .2, r: .034, rgb: '255,255,250', a: .85, moon: 1 }, stars: 0, horizon: .63,
+      ranges: [{ c: '#7f97a1' }, { c: '#687f89' }],
+      water: ['#bfcfd2', '#98aeb4'], refl: .32, shimmer: '255,255,255',
+      fog: '248,246,240', fogA: .3, clouds: { rgb: '255,255,255', a: .3, n: 3 }, parts: { rgb: '255,255,255', n: 10, a: .5 }, vig: '90,90,80', vigA: .12 },
+  },
+  forest: {
+    dark: { sky: ['#060e0d', '#0c1a18', '#152c27', '#263d36'], cel: { x: .3, y: .26, r: .026, rgb: '220,235,225', a: .55, moon: 1 }, stars: 40,
+      ranges: [{ c: '#1d302b', b: .56, a: .12, s: 260, seed: 4 }],
+      trees: [{ c: '#162720', b: .67, h: .15, gap: 13, seed: 2 }, { c: '#0f1d18', b: .78, h: .2, gap: 19, seed: 6 }, { c: '#08120f', b: .93, h: .28, gap: 28, seed: 8 }],
+      shafts: 1, fog: '132,183,176', fogA: .13, clouds: { rgb: '150,190,180', a: .035, n: 3 }, parts: { rgb: '210,236,215', n: 36, a: .5 }, vig: '2,6,5', vigA: .5 },
+    light: { sky: ['#c3d1c6', '#d9e1d5', '#e8ebdf', '#f0efe4'], cel: { x: .3, y: .26, r: .03, rgb: '255,255,245', a: .7, moon: 1 }, stars: 0,
+      ranges: [{ c: '#b3c1b1' }],
+      trees: [{ c: '#93a78f' }, { c: '#738a70' }, { c: '#566c55' }],
+      shafts: 1, fog: '247,245,238', fogA: .3, clouds: { rgb: '255,255,255', a: .25, n: 3 }, parts: { rgb: '255,255,255', n: 18, a: .55 }, vig: '90,95,80', vigA: .12 },
+  },
+  ocean: {
+    dark: { sky: ['#09111f', '#152238', '#363e55', '#746a77'], cel: { x: .5, y: .56, r: .045, rgb: '255,204,170', a: .6 }, stars: 60, horizon: .585,
+      ranges: [{ c: '#252f43', b: .588, a: .022, s: 170, seed: 12 }],
+      sea: ['#253048', '#060c15'], wave: '169,187,196',
+      fog: '170,168,190', fogA: .1, clouds: { rgb: '205,195,210', a: .07, n: 5 }, parts: { rgb: '234,241,239', n: 12, a: .25 }, vig: '3,6,12', vigA: .45 },
+    light: { sky: ['#a9bccb', '#cbd7dc', '#e7e3dc', '#f3e2cf'], cel: { x: .5, y: .56, r: .05, rgb: '255,238,214', a: .7 }, stars: 0, horizon: .585,
+      ranges: [{ c: '#a1afb7' }],
+      sea: ['#a5bac2', '#6d8e9a'], wave: '255,255,255',
+      fog: '250,246,240', fogA: .3, clouds: { rgb: '255,255,255', a: .3, n: 5 }, parts: { rgb: '255,255,255', n: 10, a: .5 }, vig: '90,90,90', vigA: .12 },
+  },
+  space: {
+    dark: { sky: ['#02040a', '#050a14', '#08101d', '#0d1727'], stars: 300,
+      nebula: [{ x: .25, y: .28, r: .55, rgb: '132,183,176', a: .085 }, { x: .78, y: .2, r: .5, rgb: '118,110,180', a: .075 }, { x: .6, y: .58, r: .42, rgb: '169,187,196', a: .05 }],
+      planet: '169,187,196', parts: { rgb: '234,241,239', n: 0, a: 0 }, clouds: { n: 0 }, vig: '0,0,0', vigA: .5 },
+    light: { sky: ['#263140', '#2f3b4a', '#3b4757', '#4a5666'], stars: 170,
+      nebula: [{ x: .25, y: .28, r: .55, rgb: '170,210,200', a: .1 }, { x: .78, y: .2, r: .5, rgb: '170,160,220', a: .08 }],
+      planet: '220,230,235', parts: { rgb: '255,255,255', n: 0, a: 0 }, clouds: { n: 0 }, vig: '10,14,20', vigA: .35 },
+  },
+};
+// Light palettes inherit geometry from dark
+Object.values(PAL).forEach(t => {
+  ['ranges', 'trees'].forEach(k => { if (t.light[k]) t.light[k] = t.light[k].map((x, i) => ({ ...t.dark[k][i], ...x })); });
+});
+
+function mkCanvas(w, h) { const c = document.createElement('canvas'); c.width = Math.max(1, Math.round(w)); c.height = Math.max(1, Math.round(h)); return c; }
+
+class Scene {
+  constructor(canvas) { this.cv = canvas; this.g = canvas.getContext('2d', { alpha: false }); this.theme = 'misty'; this.mode = 'dark'; this.w = 1; this.h = 1; this.dpr = 1; this.px = 0; this.tpx = 0; this.scroll = 0; this.sy = 0; this.L = null; }
+  configure(theme, mode) { this.theme = PAL[theme] ? theme : 'misty'; this.mode = mode; this.build(); }
+  size(w, h, dpr) { this.w = Math.max(1, w); this.h = Math.max(1, h); this.dpr = dpr; this.cv.width = Math.round(this.w * dpr); this.cv.height = Math.round(this.h * dpr); this.build(); }
+  layer(w, h) { const c = mkCanvas(w * this.dpr, h * this.dpr); const g = c.getContext('2d'); g.scale(this.dpr, this.dpr); return [c, g]; }
+  build() {
+    const P = PAL[this.theme][this.mode], w = this.w, h = this.h, ov = 60, W = w + ov * 2;
+    const L = { P, ov, W, ranges: [], trees: [], stars: [], clouds: [], parts: [] };
+    const r0 = rng(this.theme.length * 97 + 11);
+    // sky
+    const [sky, sg] = this.layer(w, h);
+    const gr = sg.createLinearGradient(0, 0, 0, h * .8);
+    P.sky.forEach((c, i) => gr.addColorStop(i / (P.sky.length - 1), c));
+    sg.fillStyle = gr; sg.fillRect(0, 0, w, h);
+    if (P.nebula) P.nebula.forEach(n => {
+      const rr = Math.max(w, h) * n.r, ng = sg.createRadialGradient(w * n.x, h * n.y, 0, w * n.x, h * n.y, rr);
+      ng.addColorStop(0, `rgba(${n.rgb},${n.a})`); ng.addColorStop(1, `rgba(${n.rgb},0)`); sg.fillStyle = ng; sg.fillRect(0, 0, w, h);
+    });
+    if (P.cel) {
+      const c = P.cel, cx = w * c.x, cy = h * c.y, R = Math.min(w, h) * c.r;
+      const glow = sg.createRadialGradient(cx, cy, R * .5, cx, cy, R * 9);
+      glow.addColorStop(0, `rgba(${c.rgb},${c.a * .45})`); glow.addColorStop(.35, `rgba(${c.rgb},${c.a * .12})`); glow.addColorStop(1, `rgba(${c.rgb},0)`);
+      sg.fillStyle = glow; sg.fillRect(0, 0, w, h);
+      const disc = sg.createRadialGradient(cx - R * .25, cy - R * .25, 0, cx, cy, R);
+      disc.addColorStop(0, `rgba(${c.rgb},${c.moon ? 1 : .95})`); disc.addColorStop(.85, `rgba(${c.rgb},${c.moon ? .92 : .6})`); disc.addColorStop(1, `rgba(${c.rgb},0)`);
+      sg.fillStyle = disc; sg.beginPath(); sg.arc(cx, cy, R, 0, TAU); sg.fill();
+      if (c.moon) { sg.fillStyle = 'rgba(120,135,150,.10)'; [[.3, -.2, .22], [-.25, .25, .16], [.1, .35, .1]].forEach(([dx, dy, rr]) => { sg.beginPath(); sg.arc(cx + dx * R, cy + dy * R, rr * R, 0, TAU); sg.fill(); }); }
+    }
+    if (P.planet) {
+      const pr = Math.max(w, h) * .9, pcx = w * .5, pcy = h + pr * .72;
+      const pg = sg.createRadialGradient(pcx, pcy - pr * .2, pr * .6, pcx, pcy, pr);
+      pg.addColorStop(0, '#05080e'); pg.addColorStop(.97, '#0a111b'); pg.addColorStop(1, `rgba(${P.planet},.35)`);
+      sg.fillStyle = pg; sg.beginPath(); sg.arc(pcx, pcy, pr, 0, TAU); sg.fill();
+      const rim = sg.createRadialGradient(pcx, pcy, pr, pcx, pcy, pr * 1.08);
+      rim.addColorStop(0, `rgba(${P.planet},.16)`); rim.addColorStop(1, `rgba(${P.planet},0)`);
+      sg.fillStyle = rim; sg.beginPath(); sg.arc(pcx, pcy, pr * 1.08, 0, TAU); sg.fill();
+    }
+    L.sky = sky;
+    // stars
+    const horizonY = h * (P.horizon || (P.ranges ? P.ranges[0].b : 1));
+    for (let i = 0; i < (P.stars || 0) * (w * h / (390 * 844)) ** .5; i++) {
+      const y = Math.pow(r0(), 1.4) * horizonY * .98;
+      L.stars.push({ x: r0() * w, y, r: r0() < .08 ? 1.3 : .5 + r0() * .6, a: .25 + r0() * .6, sp: .3 + r0() * 1.5, ph: r0() * TAU });
+    }
+    // fog sprite
+    if (P.fog) {
+      const fh = h * .2, [fs, fg] = this.layer(W, fh);
+      for (let i = 0; i < 14; i++) {
+        const x = r0() * W, y = fh * (.35 + r0() * .3), rx = 120 + r0() * 260;
+        const g2 = fg.createRadialGradient(x, y, 0, x, y, rx);
+        g2.addColorStop(0, `rgba(${P.fog},${P.fogA * .55})`); g2.addColorStop(1, `rgba(${P.fog},0)`);
+        fg.fillStyle = g2; fg.save(); fg.translate(x, y); fg.scale(1, .28); fg.translate(-x, -y); fg.beginPath(); fg.arc(x, y, rx, 0, TAU); fg.fill(); fg.restore();
+      }
+      const lg = fg.createLinearGradient(0, 0, 0, fh);
+      lg.addColorStop(0, `rgba(${P.fog},0)`); lg.addColorStop(.55, `rgba(${P.fog},${P.fogA * .5})`); lg.addColorStop(1, `rgba(${P.fog},0)`);
+      fg.fillStyle = lg; fg.fillRect(0, 0, W, fh);
+      L.fog = fs; L.fogH = fh;
+    }
+    // ranges
+    (P.ranges || []).forEach((R, i) => {
+      const [c, g] = this.layer(W, h), rr = rng(R.seed), n1 = noise1(rr), n2 = noise1(rr), n3 = noise1(rr);
+      const base = h * R.b, amp = h * R.a, sc = R.s;
+      g.beginPath(); g.moveTo(0, h);
+      for (let x = 0; x <= W; x += 4) {
+        const a = n1(x / sc), ridge = 1 - Math.abs(2 * a - 1);
+        const f = .55 * ridge + .3 * n2(x / (sc * .42)) + .15 * n3(x / (sc * .16));
+        g.lineTo(x, base - amp * f);
+      }
+      g.lineTo(W, h); g.closePath(); g.fillStyle = R.c; g.fill();
+      if (P.fog) {
+        g.globalCompositeOperation = 'source-atop';
+        const hz = g.createLinearGradient(0, base - amp, 0, base + h * .06);
+        hz.addColorStop(0, `rgba(${P.fog},0)`); hz.addColorStop(1, `rgba(${P.fog},${P.fogA * (P.water || P.sea ? .5 : 1)})`);
+        g.fillStyle = hz; g.fillRect(0, base - amp, W, h);
+        g.globalCompositeOperation = 'source-over';
+      }
+      L.ranges.push({ c, depth: .12 + i * .2, base });
+    });
+    // trees
+    (P.trees || []).forEach((T, i) => {
+      const [c, g] = this.layer(W, h), rr = rng(T.seed), base = h * T.b;
+      g.fillStyle = T.c; g.fillRect(0, base - 2, W, h - base + 2);
+      let x = -10;
+      while (x < W + 10) {
+        const th = h * T.h * (.6 + rr() * .6); this.pine(g, x, base + rr() * h * .015, th);
+        x += T.gap * (.55 + rr() * .9) * (h / 800 + .4);
+      }
+      if (P.fog) {
+        g.globalCompositeOperation = 'source-atop';
+        const hz = g.createLinearGradient(0, base - h * T.h, 0, base + h * .04);
+        hz.addColorStop(0, `rgba(${P.fog},0)`); hz.addColorStop(1, `rgba(${P.fog},${P.fogA * .9})`);
+        g.fillStyle = hz; g.fillRect(0, 0, W, h); g.globalCompositeOperation = 'source-over';
+      }
+      L.trees.push({ c, depth: .3 + i * .25, base });
+    });
+    // light shafts
+    if (P.shafts) {
+      const [c, g] = this.layer(w, h); g.globalCompositeOperation = 'lighter';
+      for (let i = 0; i < 4; i++) {
+        const x = w * (.15 + i * .22 + r0() * .08), sw = w * (.05 + r0() * .07);
+        const lg = g.createLinearGradient(0, 0, 0, h * .9);
+        lg.addColorStop(0, `rgba(${P.cel ? P.cel.rgb : '255,255,255'},${this.mode === 'light' ? .14 : .05})`); lg.addColorStop(1, 'rgba(255,255,255,0)');
+        g.fillStyle = lg; g.beginPath(); g.moveTo(x, 0); g.lineTo(x + sw, 0); g.lineTo(x + sw + w * .25, h * .9); g.lineTo(x + w * .2, h * .9); g.closePath(); g.fill();
+      }
+      L.shafts = c;
+    }
+    // water (lake): reflection baked
+    if (P.water) {
+      const y0 = h * P.horizon, [c, g] = this.layer(w, h - y0);
+      const wg = g.createLinearGradient(0, 0, 0, h - y0); wg.addColorStop(0, P.water[0]); wg.addColorStop(1, P.water[1]);
+      g.fillStyle = wg; g.fillRect(0, 0, w, h - y0);
+      g.save(); g.globalAlpha = P.refl; g.translate(0, 0); g.scale(1, -.85);
+      g.drawImage(sky, 0, 0, sky.width, y0 * this.dpr, 0, -y0, w, y0);
+      L.ranges.forEach(R => g.drawImage(R.c, ov * this.dpr, 0, w * this.dpr, y0 * this.dpr, 0, -y0, w, y0));
+      g.restore();
+      const fade = g.createLinearGradient(0, 0, 0, h - y0); fade.addColorStop(0, 'rgba(0,0,0,0)'); fade.addColorStop(1, P.water[1]);
+      g.fillStyle = fade; g.fillRect(0, 0, w, h - y0);
+      L.water = c; L.y0 = y0;
+      for (let i = 0; i < 70; i++) {
+        const near = r0() < .45 && P.cel;
+        L.parts.push({ shim: 1, x: near ? w * P.cel.x + (r0() - .5) * w * .14 : r0() * w, y: y0 + 3 + Math.pow(r0(), 1.6) * (h - y0) * .9, len: 6 + r0() * 34, a: near ? .35 : .12, sp: .4 + r0() * 1.2, ph: r0() * TAU });
+      }
+    }
+    if (P.sea) {
+      const y0 = h * P.horizon, [c, g] = this.layer(w, h - y0);
+      const wg = g.createLinearGradient(0, 0, 0, h - y0); wg.addColorStop(0, P.sea[0]); wg.addColorStop(1, P.sea[1]);
+      g.fillStyle = wg; g.fillRect(0, 0, w, h - y0);
+      if (P.cel) {
+        const cx = w * P.cel.x, gl = g.createRadialGradient(cx, 0, 0, cx, 0, h * .5);
+        gl.addColorStop(0, `rgba(${P.cel.rgb},${P.cel.a * .35})`); gl.addColorStop(1, `rgba(${P.cel.rgb},0)`);
+        g.save(); g.translate(cx, 0); g.scale(.35, 1); g.translate(-cx, 0); g.fillStyle = gl; g.fillRect(0, 0, w * 3, h); g.restore();
+      }
+      L.sea = c; L.y0 = y0;
+    }
+    // clouds
+    const CL = P.clouds || {};
+    if (CL.n) {
+      const [cs, cg] = this.layer(360, 120);
+      for (let i = 0; i < 9; i++) {
+        const x = 70 + r0() * 220, y = 55 + r0() * 20, rr = 30 + r0() * 40, g2 = cg.createRadialGradient(0, 0, 0, 0, 0, rr);
+        g2.addColorStop(0, `rgba(${CL.rgb},${CL.a * .7})`); g2.addColorStop(.6, `rgba(${CL.rgb},${CL.a * .3})`); g2.addColorStop(1, `rgba(${CL.rgb},0)`);
+        cg.save(); cg.translate(x, y); cg.scale(2.2, .55); cg.fillStyle = g2; cg.beginPath(); cg.arc(0, 0, rr, 0, TAU); cg.fill(); cg.restore();
+      }
+      L.cloud = cs;
+      for (let i = 0; i < CL.n; i++) L.clouds.push({ x: r0() * (w + 400) - 200, y: h * (.08 + r0() * .34), s: .7 + r0() * 1.3, v: 2 + r0() * 5 });
+    }
+    // floating particles
+    const PP = P.parts || {};
+    for (let i = 0; i < (PP.n || 0); i++) L.parts.push({ x: r0() * w, y: r0() * h, r: .6 + r0() * 1.3, vy: -(1.5 + r0() * 4), vx: (r0() - .5) * 3, a: PP.a * (.3 + r0() * .7), ph: r0() * TAU, sp: .4 + r0() });
+    // vignette
+    const [vg, vgc] = this.layer(w, h);
+    const v = vgc.createRadialGradient(w / 2, h * .45, Math.min(w, h) * .3, w / 2, h * .5, Math.max(w, h) * .85);
+    v.addColorStop(0, `rgba(${P.vig},0)`); v.addColorStop(1, `rgba(${P.vig},${P.vigA})`);
+    vgc.fillStyle = v; vgc.fillRect(0, 0, w, h); L.vig = vg;
+    this.L = L;
+  }
+  pine(g, x, base, h) {
+    const T = 6, w = h * .34, pts = [];
+    for (let i = 1; i <= T; i++) { const f = i / T, y = base - h + h * f * .92, ww = w * .5 * Math.pow(f, .9); pts.push([ww, y]); if (i < T) pts.push([ww * .42, y + h * .025]); }
+    g.beginPath(); g.moveTo(x, base - h);
+    pts.forEach(p => g.lineTo(x + p[0], p[1]));
+    g.lineTo(x + w * .05, base + 2); g.lineTo(x - w * .05, base + 2);
+    for (let i = pts.length - 1; i >= 0; i--) g.lineTo(x - pts[i][0], pts[i][1]);
+    g.closePath(); g.fill();
+  }
+  draw(t, still) {
+    const L = this.L; if (!L) return;
+    const g = this.g, w = this.w, h = this.h, P = L.P, d = this.dpr;
+    this.px += (this.tpx - this.px) * .04;
+    const sy = Math.min(90, this.scroll * .22);
+    g.setTransform(d, 0, 0, d, 0, 0);
+    g.drawImage(L.sky, 0, 0, w, h);
+    if (!still) { // slow colour breathing
+      const a = .035 * (1 + Math.sin(t / 37));
+      g.fillStyle = `rgba(${this.mode === 'light' ? '255,236,214' : '132,183,176'},${a})`; g.fillRect(0, 0, w, h * .6);
+    }
+    for (const s of L.stars) {
+      const tw = still ? .8 : .55 + .45 * Math.sin(t * s.sp + s.ph);
+      const x = (s.x + (this.theme === 'space' && !still ? t * 1.2 : 0)) % w;
+      g.fillStyle = `rgba(234,241,239,${s.a * tw})`; g.fillRect(x, s.y - sy * .05, s.r, s.r);
+    }
+    if (L.cloud) for (const c of L.clouds) {
+      const x = ((c.x + (still ? 0 : t * c.v) + 400) % (w + 400)) - 400;
+      g.drawImage(L.cloud, x + this.px * 6, c.y - sy * .1, 360 * c.s, 120 * c.s);
+    }
+    const ox = -L.ov;
+    L.ranges.forEach((R, i) => {
+      g.drawImage(R.c, ox + this.px * R.depth * 40, -sy * R.depth, L.W, h);
+      if (L.fog && i < L.ranges.length - 1 || (L.fog && L.trees.length)) {
+        const fx = ox - 30 + (still ? 0 : Math.sin(t * .025 + i * 1.7) * 40) + this.px * R.depth * 40;
+        g.drawImage(L.fog, fx, R.base - L.fogH * .55 - sy * R.depth, L.W, L.fogH);
+      }
+    });
+    if (L.shafts) { g.globalAlpha = still ? .8 : .55 + .45 * Math.sin(t * .09); g.drawImage(L.shafts, 0, 0, w, h); g.globalAlpha = 1; }
+    L.trees.forEach((T, i) => {
+      g.drawImage(T.c, ox + this.px * T.depth * 40, -sy * T.depth, L.W, h);
+      if (L.fog && i < L.trees.length - 1) {
+        const fx = ox - 30 + (still ? 0 : Math.sin(t * .03 + i * 2.3) * 50);
+        g.drawImage(L.fog, fx, T.base - L.fogH * .5 - sy * T.depth, L.W, L.fogH);
+      }
+    });
+    if (L.water) {
+      const y0 = L.y0 - sy * .2;
+      g.drawImage(L.water, 0, y0, w, h - L.y0 + sy);
+    }
+    if (L.sea) {
+      const y0 = L.y0 - sy * .2;
+      g.drawImage(L.sea, 0, y0, w, h - L.y0 + sy);
+      g.lineWidth = 1;
+      for (let k = 1; k <= 16; k++) {
+        const dd = k / 16, y = y0 + (h - y0) * Math.pow(dd, 1.8), amp = .6 + dd * 4.5, wl = 70 + dd * 320, sp = t * (.15 + dd * .5) * (still ? 0 : 1);
+        g.strokeStyle = `rgba(${P.wave},${.04 + dd * .09})`; g.beginPath();
+        for (let x = 0; x <= w + 10; x += 10) { const yy = y + Math.sin(x / wl * TAU + sp + k) * amp; x ? g.lineTo(x, yy) : g.moveTo(x, yy); }
+        g.stroke();
+      }
+      if (P.cel) {
+        const cx = w * P.cel.x;
+        for (let i = 0; i < 26; i++) {
+          const dd = ((i * 37) % 26) / 26, y = y0 + 4 + (h - y0) * .7 * Math.pow(dd, 1.5), spread = 10 + dd * w * .12;
+          const x = cx + Math.sin(i * 12.9 + (still ? 0 : t * .3)) * spread, a = .25 * (.5 + .5 * Math.sin((still ? 0 : t * 1.4) + i));
+          g.fillStyle = `rgba(${P.cel.rgb},${a})`; g.fillRect(x, y, 6 + dd * 22, 1);
+        }
+      }
+    }
+    for (const p of L.parts) {
+      if (p.shim) {
+        const a = p.a * (still ? .7 : .5 + .5 * Math.sin(t * p.sp + p.ph));
+        g.fillStyle = `rgba(${P.shimmer},${a})`; g.fillRect(p.x + (still ? 0 : Math.sin(t * .2 + p.ph) * 4), p.y - sy * .2, p.len, 1);
+        continue;
+      }
+      let x = p.x, y = p.y;
+      if (!still) { x = (p.x + t * p.vx + Math.sin(t * .3 + p.ph) * 8 + w) % w; y = ((p.y + t * p.vy) % h + h) % h; }
+      g.fillStyle = `rgba(${P.parts.rgb},${p.a * (.6 + .4 * Math.sin(t * p.sp + p.ph))})`;
+      g.beginPath(); g.arc(x, y, p.r, 0, TAU); g.fill();
+    }
+    g.drawImage(L.vig, 0, 0, w, h);
+  }
+}
+const thumbCache = {};
+function sceneThumb(theme, mode, w = 120, h = 160) {
+  const k = theme + mode + w + 'x' + h;
+  if (thumbCache[k]) return thumbCache[k];
+  const c = mkCanvas(w, h), s = new Scene(c); s.size(w, h, 1); s.configure(theme, mode); s.draw(30, true);
+  try { thumbCache[k] = c.toDataURL('image/jpeg', .82); } catch (e) { thumbCache[k] = ''; }
+  return thumbCache[k];
+}
+function renderStill(canvas, theme, mode) {
+  const r = canvas.getBoundingClientRect(), dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const s = new Scene(canvas); s.size(Math.max(1, r.width), Math.max(1, r.height), dpr); s.configure(theme, mode); s.draw(30, true);
+}
+
+/* =========================================================
+   Breath math & orb
+   ========================================================= */
+function breathAt(pat, sec) {
+  const seq = [['in', pat.in], ['h1', pat.h1], ['out', pat.out], ['h2', pat.h2]].filter(p => p[1] > 0);
+  const cyc = seq.reduce((a, p) => a + p[1], 0) || 1;
+  const cycle = Math.floor(sec / cyc);
+  let t = sec - cycle * cyc;
+  for (const [ph, d] of seq) {
+    if (t < d) {
+      const p = t / d;
+      const scale = ph === 'in' ? easeIO(p) : ph === 'out' ? 1 - easeIO(p) : ph === 'h1' ? 1 : 0;
+      return { phase: ph, p, remain: d - t, dur: d, scale, cycle };
+    }
+    t -= d;
+  }
+  return { phase: 'in', p: 0, remain: pat.in, dur: pat.in, scale: 0, cycle };
+}
+const PH_LABEL = { in: '들숨', h1: '유지', out: '날숨', h2: '유지' };
+
+class Orb {
+  constructor(cv, rich) {
+    this.cv = cv; this.g = cv.getContext('2d'); this.rich = rich; this.mix = 0; this.size = 0; this.dpr = 1; this.ripples = []; this.lt = 0;
+    this.parts = Array.from({ length: rich ? 54 : 0 }, () => ({ a: Math.random() * TAU, o: Math.random(), s: .5 + Math.random() * .9, r: .5 + Math.random() * 1.2 }));
+  }
+  resize() {
+    const r = this.cv.getBoundingClientRect(), dpr = Math.min(window.devicePixelRatio || 1, 2), s = Math.round(r.width);
+    if (s < 10 || (s === this.size && dpr === this.dpr)) return;
+    this.size = s; this.dpr = dpr; this.cv.width = s * dpr; this.cv.height = s * dpr;
+  }
+  ripple() { if (this.ripples.length < 4) this.ripples.push(performance.now()); }
+  draw(now, st) {
+    if (!this.size) this.resize();
+    const g = this.g, Sz = this.size, d = this.dpr; if (!Sz) return;
+    const dt = this.lt ? Math.min(.1, (now - this.lt) / 1000) : 0; this.lt = now;
+    const t = now / 1000, cx = Sz / 2, cy = Sz / 2, light = document.documentElement.dataset.theme === 'light' && !st.dark;
+    const motion = reducedMotion() ? 0 : st.motion;
+    g.setTransform(d, 0, 0, d, 0, 0); g.clearRect(0, 0, Sz, Sz);
+    const R0 = Sz * .16, R1 = Sz * .3, r = R0 + (R1 - R0) * st.scale;
+    const target = { in: 0, h1: .5, out: 1, h2: .5 }[st.phase] ?? 0;
+    this.mix += (target - this.mix) * Math.min(1, dt * 1.6);
+    const cA = light ? [86, 132, 118] : [132, 186, 178], cB = light ? [104, 122, 156] : [168, 182, 216];
+    const c = mixRGB(cA, cB, this.mix), dim = st.dim || 1;
+    // halo
+    const hg = g.createRadialGradient(cx, cy, r * .4, cx, cy, Math.min(r * 2.4, Sz * .5));
+    hg.addColorStop(0, rgba(c, (light ? .22 : .2) * dim)); hg.addColorStop(.5, rgba(c, (light ? .08 : .07) * dim)); hg.addColorStop(1, rgba(c, 0));
+    g.fillStyle = hg; g.fillRect(0, 0, Sz, Sz);
+    // ripples
+    this.ripples = this.ripples.filter(rt => {
+      const a = (now - rt) / 1800; if (a > 1) return false;
+      g.strokeStyle = rgba(c, (1 - a) * .35 * dim); g.lineWidth = 1.2; g.beginPath(); g.arc(cx, cy, r * (1 + a * .9), 0, TAU); g.stroke(); return true;
+    });
+    // breath ring ticks
+    if (this.rich) {
+      const N = 96, rr = R1 * 1.24;
+      for (let i = 0; i < N; i++) {
+        const f = i / N, on = f <= st.p, th = -Math.PI / 2 + f * TAU, len = on ? 7 : 4;
+        g.strokeStyle = on ? rgba(c, .7 * dim) : rgba(light ? [40, 60, 58] : [234, 241, 239], .1 * dim);
+        g.lineWidth = 1.2; g.beginPath();
+        g.moveTo(cx + Math.cos(th) * rr, cy + Math.sin(th) * rr); g.lineTo(cx + Math.cos(th) * (rr + len), cy + Math.sin(th) * (rr + len)); g.stroke();
+      }
+      const dir = st.phase === 'in' ? -1 : st.phase === 'out' ? 1 : 0;
+      for (const p of this.parts) {
+        p.o += dir * dt * .16 * p.s * motion; if (p.o > 1) p.o -= 1; if (p.o < 0) p.o += 1;
+        p.a += dt * .05 * p.s * motion;
+        const pr = r * 1.06 + p.o * Sz * .14, al = Math.sin(p.o * Math.PI) * .55 * dim;
+        g.fillStyle = rgba(light ? c : mixRGB(c, [240, 246, 244], .5), al);
+        g.beginPath(); g.arc(cx + Math.cos(p.a) * pr, cy + Math.sin(p.a) * pr, p.r, 0, TAU); g.fill();
+      }
+    }
+    // translucent layered body
+    g.globalCompositeOperation = light ? 'source-over' : 'lighter';
+    const layers = [[1, .1, .21, 0], [.86, .13, -.16, 2.1], [.72, .16, .12, 4.2]];
+    for (const [k, a, sp, ph] of layers) {
+      const rr = r * k; g.beginPath();
+      for (let i = 0; i <= 80; i++) {
+        const th = i / 80 * TAU;
+        const wv = Math.sin(th * 2 + t * sp * 3 + ph) * .5 + Math.sin(th * 3 - t * sp * 2 + ph * 1.3) * .32 + Math.sin(th * 5 + t * sp * 4.2) * .18;
+        const rad = rr * (1 + wv * .05 * motion), x = cx + Math.cos(th) * rad, y = cy + Math.sin(th) * rad;
+        i ? g.lineTo(x, y) : g.moveTo(x, y);
+      }
+      g.closePath();
+      const lg = g.createRadialGradient(cx - rr * .28, cy - rr * .32, rr * .04, cx, cy, rr * 1.02);
+      const hi = light ? [255, 255, 255] : [238, 246, 244];
+      lg.addColorStop(0, rgba(hi, a * (light ? 2.6 : 1.7) * dim)); lg.addColorStop(.55, rgba(c, a * (light ? 1.9 : 1) * dim)); lg.addColorStop(1, rgba(c, a * .25 * dim));
+      g.fillStyle = lg; g.fill();
+    }
+    const cg = g.createRadialGradient(cx, cy, 0, cx, cy, r * .6);
+    cg.addColorStop(0, `rgba(250,253,252,${(light ? .5 : .3) * dim})`); cg.addColorStop(1, 'rgba(250,253,252,0)');
+    g.fillStyle = cg; g.beginPath(); g.arc(cx, cy, r * .6, 0, TAU); g.fill();
+    g.globalCompositeOperation = 'source-over';
+    g.strokeStyle = rgba(light ? [255, 255, 255] : [234, 241, 239], (light ? .5 : .14) * dim); g.lineWidth = 1;
+    g.beginPath(); g.arc(cx, cy, r * 1.01, 0, TAU); g.stroke();
+  }
+}
+
+/* =========================================================
+   Sound engine — generative, Web Audio
+   ========================================================= */
+const Sound = (() => {
+  let ctx = null, fade, master, fx, buffers = {}, stopT = 0, lastChime = 0;
+  const ch = {};
+  const BASE = { rain: .6, wind: .95, waves: .9, white: .14, brown: .8, ambient: .34 };
+  const MAX_OUT = .72;
+  const gain = v => { const n = ctx.createGain(); n.gain.value = v; return n; };
+  const biq = (type, f, q = .7) => { const n = ctx.createBiquadFilter(); n.type = type; n.frequency.value = f; n.Q.value = q; return n; };
+  function noiseBuf(kind, sec = 8) {
+    const sr = ctx.sampleRate, n = Math.floor(sr * sec), b = ctx.createBuffer(2, n, sr);
+    for (let c = 0; c < 2; c++) {
+      const d = b.getChannelData(c);
+      if (kind === 'white') for (let i = 0; i < n; i++) d[i] = Math.random() * 2 - 1;
+      else if (kind === 'pink') {
+        let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+        for (let i = 0; i < n; i++) { const w = Math.random() * 2 - 1; b0 = .99886 * b0 + w * .0555179; b1 = .99332 * b1 + w * .0750759; b2 = .969 * b2 + w * .153852; b3 = .8665 * b3 + w * .3104856; b4 = .55 * b4 + w * .5329522; b5 = -.7616 * b5 - w * .016898; d[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + w * .5362) * .11; b6 = w * .115926; }
+      } else if (kind === 'brown') {
+        let last = 0; for (let i = 0; i < n; i++) { const w = Math.random() * 2 - 1; last = (last + .02 * w) / 1.02; d[i] = last * 3.5; }
+      } else if (kind === 'drops') {
+        let i = 0;
+        while (i < n) {
+          i += Math.floor(Math.random() * sr * .014) + 30;
+          const amp = Math.pow(Math.random(), 2.4) * .9, len = Math.floor(sr * (.002 + Math.random() * .007));
+          for (let k = 0; k < len && i + k < n; k++) d[i + k] += (Math.random() * 2 - 1) * amp * Math.exp(-k / (len / 4));
+        }
+      }
+      const diff = d[n - 1] - d[0]; for (let i = 0; i < n; i++) d[i] -= diff * i / n; // seamless loop
+    }
+    return b;
+  }
+  function src(buf, rate = 1) { const s = ctx.createBufferSource(); s.buffer = buf; s.loop = true; s.playbackRate.value = rate; s.start(ctx.currentTime, Math.random() * buf.duration); return s; }
+  function lfo(freq, depth, target) { const o = ctx.createOscillator(); o.frequency.value = freq; const g = gain(depth); o.connect(g); g.connect(target); o.start(); return o; }
+  const BUILD = {
+    rain() {
+      const out = gain(1);
+      const s1 = src(buffers.pink), hp = biq('highpass', 380), lp = biq('lowpass', 5200), g1 = gain(.5); s1.connect(hp); hp.connect(lp); lp.connect(g1); g1.connect(out);
+      const s2 = src(buffers.drops), bp = biq('bandpass', 3000, .6), g2 = gain(.75); s2.connect(bp); bp.connect(g2); g2.connect(out);
+      const s3 = src(buffers.brown), lp3 = biq('lowpass', 250), g3 = gain(.35); s3.connect(lp3); lp3.connect(g3); g3.connect(out);
+      return { out, nodes: [s1, s2, s3, lfo(.045, .12, g1.gain)] };
+    },
+    wind() {
+      const out = gain(1);
+      const s = src(buffers.brown), bp = biq('bandpass', 420, .9), g1 = gain(.85); s.connect(bp); bp.connect(g1); g1.connect(out);
+      const s2 = src(buffers.pink), bp2 = biq('bandpass', 1100, 4.5), g2 = gain(.1); s2.connect(bp2); bp2.connect(g2); g2.connect(out);
+      return { out, nodes: [s, s2, lfo(.06, 230, bp.frequency), lfo(.083, .35, g1.gain), lfo(.037, 360, bp2.frequency), lfo(.11, .07, g2.gain)] };
+    },
+    waves() {
+      const out = gain(1);
+      const s = src(buffers.brown), s2 = src(buffers.pink), lp = biq('lowpass', 500, .4), sw = gain(.12);
+      const pg = gain(.5); s2.connect(pg); s.connect(lp); pg.connect(lp); lp.connect(sw); sw.connect(out);
+      const h = src(buffers.pink), hl = biq('lowpass', 800), hg = gain(.06); h.connect(hl); hl.connect(hg); hg.connect(out);
+      let next = ctx.currentTime + .3;
+      const sched = () => {
+        const now = ctx.currentTime; if (next < now) next = now + .1;
+        while (next < now + 75) {
+          const per = 7 + Math.random() * 6, peak = .5 + Math.random() * .5, rise = per * (.36 + Math.random() * .12);
+          sw.gain.setTargetAtTime(peak, next, rise / 3); lp.frequency.setTargetAtTime(1200 + peak * 1500, next, rise / 3);
+          sw.gain.setTargetAtTime(.1, next + rise, (per - rise) / 3); lp.frequency.setTargetAtTime(420, next + rise, (per - rise) / 3);
+          next += per;
+        }
+      };
+      sched(); const iv = setInterval(sched, 5000);
+      return { out, nodes: [s, s2, h], stop() { clearInterval(iv); } };
+    },
+    white() {
+      const out = gain(1), s = src(buffers.white), lp = biq('lowpass', 6500), hs = biq('highshelf', 3000); hs.gain.value = -6;
+      s.connect(lp); lp.connect(hs); hs.connect(out); return { out, nodes: [s] };
+    },
+    brown() { const out = gain(1), s = src(buffers.brown), lp = biq('lowpass', 900); s.connect(lp); lp.connect(out); return { out, nodes: [s] }; },
+    ambient() {
+      const out = gain(1), lp = biq('lowpass', 1500, .3), dry = gain(.7); lp.connect(dry); dry.connect(out);
+      const d1 = ctx.createDelay(2), d2 = ctx.createDelay(2); d1.delayTime.value = .43; d2.delayTime.value = .61;
+      const fb = gain(.42), dl = biq('lowpass', 1700), wet = gain(.5);
+      lp.connect(d1); d1.connect(d2); d2.connect(dl); dl.connect(fb); fb.connect(d1); dl.connect(wet); wet.connect(out);
+      const nodes = [];
+      [146.83, 220, 293.66, 329.63, 440, 554.37].forEach((f, i) => {
+        const base = .05 / (1 + i * .35), vg = gain(base); vg.connect(lp);
+        [-5, 5].forEach(det => { const o = ctx.createOscillator(); o.type = i < 2 ? 'sine' : 'triangle'; o.frequency.value = f; o.detune.value = det; o.connect(vg); o.start(); nodes.push(o); });
+        nodes.push(lfo(.018 + i * .013, base * .9, vg.gain));
+      });
+      return { out, nodes };
+    },
+  };
+  function ensure() {
+    if (!ctx) {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return null;
+      try { ctx = new AC({ latencyHint: 'playback' }); } catch (e) { try { ctx = new AC(); } catch (_) { return null; } }
+      const comp = ctx.createDynamicsCompressor();
+      comp.threshold.value = -16; comp.knee.value = 12; comp.ratio.value = 4; comp.attack.value = .01; comp.release.value = .35;
+      master = gain(S.settings.volume * MAX_OUT); fade = gain(0); fx = gain(1);
+      fade.connect(master); fx.connect(master); master.connect(comp); comp.connect(ctx.destination);
+      ['white', 'pink', 'brown', 'drops'].forEach(k => buffers[k] = noiseBuf(k));
+    }
+    if (ctx.state !== 'running') ctx.resume().catch(() => {});
+    return ctx;
+  }
+  function kill(name) {
+    const c = ch[name]; if (!c) return;
+    c.nodes.forEach(n => { try { n.stop(); } catch (e) {} });
+    c.stop && c.stop(); try { c.level.disconnect(); } catch (e) {}
+    delete ch[name];
+  }
+  function setLevel(name, v, tc = .08) {
+    if (!ctx) return;
+    let c = ch[name];
+    if (v > .001 && !c) { c = ch[name] = BUILD[name](); c.level = gain(0); c.out.connect(c.level); c.level.connect(fade); }
+    if (!c) return;
+    clearTimeout(c.killT);
+    c.level.gain.setTargetAtTime(v * BASE[name], ctx.currentTime, tc);
+    if (v <= .001) c.killT = setTimeout(() => kill(name), Math.max(1500, tc * 6000));
+  }
+  return {
+    ensure,
+    get ready() { return !!ctx; },
+    state() { return ctx ? ctx.state : 'none'; },
+    resume() { return ctx ? ctx.resume().then(() => ctx.state === 'running').catch(() => false) : Promise.resolve(false); },
+    applyMix(m, tc = .6) { if (!ctx) return; SOUND_IDS.forEach(k => setLevel(k, clamp(+(m && m[k]) || 0, 0, 1), tc)); },
+    setLevel,
+    fadeTo(v, sec) {
+      if (!ctx) return;
+      if (v > 0) clearTimeout(stopT);
+      const t = ctx.currentTime;
+      fade.gain.cancelScheduledValues(t); fade.gain.setValueAtTime(fade.gain.value, t);
+      fade.gain.linearRampToValueAtTime(v, t + Math.max(.05, sec));
+    },
+    setVolume(v) { if (master) master.gain.setTargetAtTime(v * MAX_OUT, ctx.currentTime, .05); },
+    stopAll(after = 0) { clearTimeout(stopT); stopT = setTimeout(() => Object.keys(ch).forEach(kill), after * 1000); },
+    chime(soft = 1) {
+      if (!ensure()) return;
+      const now = ctx.currentTime; if (now - lastChime < 1.5) return; lastChime = now;
+      const g = gain(0); g.connect(fx);
+      g.gain.setValueAtTime(0, now); g.gain.linearRampToValueAtTime(.2 * soft, now + .015); g.gain.exponentialRampToValueAtTime(.0001, now + 6.5);
+      [[392, 1], [784 * 1.002, .32], [1176.5, .16], [1569, .08]].forEach(([f, a]) => {
+        const o = ctx.createOscillator(); o.frequency.value = f; const og = gain(a); o.connect(og); og.connect(g); o.start(now); o.stop(now + 6.6);
+      });
+    },
+  };
+})();
+
+/* =========================================================
+   Voice guidance: Web Speech + user audio (IndexedDB)
+   ========================================================= */
+const Voice = {
+  supported: 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window,
+  voices: [], failed: false,
+  init() {
+    if (!this.supported) return;
+    const upd = () => { try { this.voices = speechSynthesis.getVoices().filter(v => /^ko/i.test(v.lang)); } catch (e) { this.voices = []; } if (tab === 'settings') renderSettings(); };
+    upd();
+    try { speechSynthesis.addEventListener('voiceschanged', upd); } catch (e) { speechSynthesis.onvoiceschanged = upd; }
+  },
+  speak(text, rate) {
+    if (!this.supported || this.failed || !text) return false;
+    try {
+      speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text); u.lang = 'ko-KR';
+      const v = this.voices.find(v => v.voiceURI === S.settings.voiceURI) || this.voices[0]; if (v) u.voice = v;
+      u.rate = rate ?? S.settings.rate; u.volume = .9;
+      u.onerror = e => { if (e.error && !/cancel|interrupt/.test(e.error)) { this.failed = true; toast('음성 안내를 재생하지 못해 텍스트 안내로 이어갈게요.'); } };
+      speechSynthesis.speak(u); return true;
+    } catch (e) { this.failed = true; return false; }
+  },
+  stop() { if (this.supported) try { speechSynthesis.cancel(); } catch (e) {} },
+};
+const IDB = {
+  open() {
+    return new Promise((res, rej) => {
+      if (!window.indexedDB) return rej(new Error('no idb'));
+      const r = indexedDB.open('goyo', 1);
+      r.onupgradeneeded = () => r.result.createObjectStore('files');
+      r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
+    });
+  },
+  async tx(mode, fn) { const db = await this.open(); return new Promise((res, rej) => { const t = db.transaction('files', mode), st = t.objectStore('files'), q = fn(st); t.oncomplete = () => res(q && q.result); t.onerror = () => rej(t.error); }); },
+  get(k) { return this.tx('readonly', s => s.get(k)); },
+  put(k, v) { return this.tx('readwrite', s => s.put(v, k)); },
+  del(k) { return this.tx('readwrite', s => s.delete(k)); },
+};
+const GuideAudio = {
+  el: null, url: null, name: '',
+  async load() { try { const rec = await IDB.get('guide'); if (rec && rec.blob) { this.name = rec.name; this.url = URL.createObjectURL(rec.blob); } } catch (e) {} },
+  async set(file) {
+    if (!file || !/^audio\//.test(file.type || 'audio/')) { toast('오디오 파일만 올릴 수 있어요.'); return; }
+    if (file.size > 80 * 1024 * 1024) { toast('80MB 이하의 파일을 선택해 주세요.'); return; }
+    if (this.url) URL.revokeObjectURL(this.url);
+    this.url = URL.createObjectURL(file); this.name = file.name;
+    try { await IDB.put('guide', { name: file.name, blob: file }); toast('안내 음원을 기기에 저장했어요.'); }
+    catch (e) { toast('이번 접속 동안만 사용할 수 있어요. 브라우저가 파일 저장을 허용하지 않았어요.'); }
+  },
+  async clear() { this.stop(); if (this.url) URL.revokeObjectURL(this.url); this.url = null; this.name = ''; try { await IDB.del('guide'); } catch (e) {} },
+  play(offsetSec = 0) {
+    if (!this.url) return false;
+    if (!this.el) this.el = new Audio();
+    const el = this.el; el.src = this.url; el.volume = .9;
+    const go = () => { try { if (offsetSec && isFinite(el.duration) && offsetSec < el.duration) el.currentTime = offsetSec; } catch (e) {} el.play().catch(() => toast('내 안내 음원을 재생하지 못했어요. 텍스트 안내로 이어갈게요.')); };
+    if (offsetSec) el.addEventListener('loadedmetadata', go, { once: true }); else go();
+    el.onerror = () => toast('안내 음원을 읽을 수 없어요. 텍스트 안내로 이어갈게요.');
+    return true;
+  },
+  pause() { this.el && this.el.pause(); },
+  resume() { if (this.el && this.el.src && !this.el.ended) this.el.play().catch(() => {}); },
+  stop() { if (this.el) { this.el.pause(); this.el.removeAttribute('src'); } },
+  fadeOut(sec) {
+    const el = this.el; if (!el || el.paused) return;
+    const v0 = el.volume, t0 = performance.now();
+    const step = () => { const p = (performance.now() - t0) / (sec * 1000); if (p >= 1) { el.pause(); el.volume = v0; return; } el.volume = v0 * (1 - p); setTimeout(step, 50); };
+    step();
+  },
+};
+
+/* =========================================================
+   Frame loop
+   ========================================================= */
+const Loop = {
+  fns: new Set(), raf: 0,
+  add(f) { this.fns.add(f); this.kick(); },
+  remove(f) { this.fns.delete(f); },
+  kick() { if (!this.raf && this.fns.size) this.raf = requestAnimationFrame(this.step); },
+  step: now => { Loop.raf = 0; Loop.fns.forEach(f => { try { f(now); } catch (e) { console.error(e); } }); Loop.kick(); },
+};
+
+/* =========================================================
+   Back-button / overlay history
+   ========================================================= */
+const Back = {
+  stack: [], pending: 0, skip: 0, timer: 0,
+  push(fn) {
+    this.stack.push(fn);
+    try { if (this.pending > 0) { this.pending--; history.replaceState({ goyo: 1 }, ''); } else history.pushState({ goyo: 1 }, ''); } catch (e) {}
+  },
+  drop(fn) {
+    const i = this.stack.lastIndexOf(fn); if (i < 0) return;
+    this.stack.splice(i, 1); this.pending++;
+    clearTimeout(this.timer);
+    this.timer = setTimeout(() => { if (this.pending) { const n = this.pending; this.pending = 0; this.skip++; try { history.go(-n); } catch (e) { this.skip--; } } }, 30);
+  },
+};
+window.addEventListener('popstate', () => {
+  if (Back.skip > 0) { Back.skip--; return; }
+  const fn = Back.stack.pop(); if (fn) fn(true);
+});
+
+/* =========================================================
+   Toast & sheets
+   ========================================================= */
+let toastT = 0;
+function toast(msg, ms = 3200) {
+  const el = $('#toast'); if (!el) return;
+  el.textContent = msg; el.classList.add('show');
+  clearTimeout(toastT); toastT = setTimeout(() => el.classList.remove('show'), ms);
+}
+const Sheet = {
+  stack: [],
+  open(html, { onClose, label = '대화상자', cls = '' } = {}) {
+    const wrap = document.createElement('div');
+    wrap.className = 'sheet-wrap ' + cls;
+    wrap.innerHTML = `<div class="backdrop" data-act="sheet-close"></div><div class="sheet" role="dialog" aria-modal="true" aria-label="${esc(label)}"><div class="grabber"></div>${html}</div>`;
+    if ($('#player').classList.contains('sleep') && Player.active) wrap.classList.add('force-dark');
+    $('#sheets').appendChild(wrap);
+    const item = { wrap, onClose, prev: document.activeElement };
+    item.back = () => this._close(item, true);
+    this.stack.push(item); Back.push(item.back);
+    requestAnimationFrame(() => requestAnimationFrame(() => wrap.classList.add('open')));
+    setTimeout(() => { const f = wrap.querySelector('[data-autofocus]') || wrap.querySelector('.sheet button, .sheet input, .sheet textarea, .sheet select'); f && f.focus({ preventScroll: true }); }, 80);
+    return wrap;
+  },
+  close() { const it = this.stack[this.stack.length - 1]; if (it) this._close(it, false); },
+  closeAll() { while (this.stack.length) this.close(); },
+  _close(item, fromPop) {
+    const i = this.stack.indexOf(item); if (i < 0) return;
+    this.stack.splice(i, 1);
+    if (!fromPop) Back.drop(item.back);
+    item.wrap.classList.remove('open');
+    setTimeout(() => item.wrap.remove(), 520);
+    try { item.onClose && item.onClose(); } catch (e) { console.error(e); }
+    if (item.prev && document.contains(item.prev)) item.prev.focus({ preventScroll: true });
+  },
+  get top() { return this.stack[this.stack.length - 1]; },
+};
+function confirmSheet({ title, body = '', ok = '확인', cancel = '취소', onOk, danger = false }) {
+  const w = Sheet.open(`<h2 class="sheet-title">${title}</h2>${body ? `<p class="sheet-sub">${body}</p>` : ''}
+    <div class="sheet-actions"><button class="btn ghost" data-act="sheet-close" data-autofocus>${cancel}</button><button class="btn primary" data-k="ok">${ok}</button></div>`, { label: title });
+  $('[data-k=ok]', w).addEventListener('click', () => { Sheet.close(); onOk && onOk(); }, { once: true });
+}
+
+/* =========================================================
+   Scene control
+   ========================================================= */
+const sceneCv = $('#scene');
+const scene = new Scene(sceneCv);
+let sceneKey = '', quality = 'high', frameAvg = 16, lastFrame = 0, skipFrame = false, sceneT0 = performance.now(), sampleStart = 0;
+function sceneDpr() { return quality === 'high' ? Math.min(window.devicePixelRatio || 1, 1.5) : 1; }
+function sizeScene() {
+  const w = window.innerWidth, h = Math.max(window.innerHeight, document.documentElement.clientHeight);
+  scene.size(w, h, sceneDpr()); drawSceneOnce();
+}
+function drawSceneOnce() { scene.draw((performance.now() - sceneT0) / 1000, sceneStatic()); }
+function setSceneTheme(theme, instant, modeOverride) {
+  const mode = modeOverride || resolvedMode(), key = theme + '|' + mode;
+  if (key === sceneKey) return;
+  const first = !sceneKey; sceneKey = key;
+  if (first || instant) { scene.configure(theme, mode); drawSceneOnce(); return; }
+  sceneCv.style.opacity = 0;
+  setTimeout(() => { scene.configure(theme, mode); drawSceneOnce(); sceneCv.style.opacity = 1; }, 400);
+}
+function sceneFrame(now) {
+  if (sceneStatic() || document.hidden) return;
+  const dt = now - lastFrame; lastFrame = now;
+  if (dt > 0 && dt < 200) frameAvg = frameAvg * .96 + dt * .04;
+  if (!sampleStart) sampleStart = now;
+  if (now - sampleStart > 4000) {
+    if (quality === 'high' && frameAvg > 25) { quality = 'medium'; sizeScene(); sampleStart = now; }
+    else if (quality === 'medium' && frameAvg > 45) { autoLow = true; drawSceneOnce(); }
+  }
+  if (quality === 'medium' || S.settings.effects === 'medium') { skipFrame = !skipFrame; if (skipFrame) return; }
+  scene.draw((now - sceneT0) / 1000, false);
+}
+function applyEffects() {
+  quality = S.settings.effects === 'high' ? 'high' : 'medium'; autoLow = false; sampleStart = 0; frameAvg = 16;
+  sizeScene();
+  if (sceneStatic()) Loop.remove(sceneFrame); else Loop.add(sceneFrame);
+}
+
+/* =========================================================
+   Appearance
+   ========================================================= */
+function applyAppearance() {
+  const mode = resolvedMode();
+  document.documentElement.dataset.theme = mode;
+  document.documentElement.dataset.motion = reducedMotion() ? 'reduce' : 'full';
+  const meta = $('meta[name=theme-color]'); if (meta) meta.content = mode === 'light' ? '#F3EFE6' : '#0B1118';
+  sceneKey = '';
+  setSceneTheme(Player.active && Player.cfg ? Player.cfg.theme : S.settings.scene, true, Player.active && Player.cfg && Player.cfg.kind === 'sleep' ? 'dark' : null);
+  applyEffects();
+}
+mqDark.addEventListener?.('change', () => { if (S.settings.appearance === 'system') { applyAppearance(); rerenderCurrent(); } });
+mqReduce.addEventListener?.('change', () => { if (S.settings.motion === 'system') applyAppearance(); });
+
+/* =========================================================
+   Helpers for content
+   ========================================================= */
+function timeOfDay(d = new Date()) { const h = d.getHours(); return h >= 5 && h < 11 ? 'morning' : h >= 11 && h < 17 ? 'day' : h >= 17 && h < 21 ? 'evening' : 'night'; }
+const TOD_LABEL = { morning: '아침', day: '낮', evening: '저녁', night: '밤' };
+function recommend() {
+  const tod = timeOfDay(), goalMap = { calm: ['calm', 'thoughts'], focus: ['focus'], rest: ['stress', 'nature'], sleep: ['sleep'], free: [] };
+  let cats = { morning: ['morning'], day: ['calm', 'focus', 'stress', 'nature'], evening: ['evening', 'gratitude'], night: ['sleep'] }[tod];
+  const goalCats = S.settings.goals.flatMap(g => goalMap[g] || []).filter(c => c !== 'sleep' || tod === 'night');
+  if (tod === 'day' && goalCats.length) cats = goalCats;
+  if (tod === 'evening' && S.settings.goals.includes('sleep')) cats = ['evening', 'sleep'];
+  const d = S.settings.duration;
+  let pool = PROGRAMS.filter(p => cats.includes(p.category)).sort((a, b) => Math.abs(a.minutes - d) - Math.abs(b.minutes - d)).slice(0, 3);
+  if (!pool.length) pool = [PROG['still-start']];
+  const dayIdx = Math.floor((Date.now() - new Date().getTimezoneOffset() * 60000) / DAY);
+  return pool[dayIdx % pool.length];
+}
+function patternOf(key) { if (key === 'custom') { const c = S.settings.breath.custom; return { in: c.in, h1: c.h1, out: c.out, h2: c.h2 }; } const p = PATTERNS[key] || PATTERNS.relax; return { in: p.in, h1: p.h1, out: p.out, h2: p.h2 }; }
+function patternText(p) { return [p.in && `들숨 ${p.in}`, p.h1 && `유지 ${p.h1}`, p.out && `날숨 ${p.out}`, p.h2 && `유지 ${p.h2}`].filter(Boolean).join(' · ') + '초'; }
+function mixSummary(m) {
+  const on = SOUND_IDS.filter(k => (m[k] || 0) > .001).sort((a, b) => m[b] - m[a]);
+  return on.length ? on.map(k => `${SOUND_NAME[k]} ${Math.round(m[k] * 100)}%`).join(' · ') : '무음';
+}
+function soundMix(choice) {
+  if (choice === 'mine') return { ...S.settings.mix };
+  if (choice === 'none' || !choice) return {};
+  return { [choice]: choice === 'white' ? .35 : .45 };
+}
+const voiceMode = on => !on ? 'off' : (S.settings.voice === 'upload' && GuideAudio.url ? 'upload' : 'tts');
+function dateLabel(d = new Date()) { return `${d.getMonth() + 1}월 ${d.getDate()}일 ${WD[d.getDay()]}요일`; }
+
+/* =========================================================
+   Navigation
+   ========================================================= */
+const TABS = ['today', 'library', 'breath', 'records', 'settings'];
+let tab = 'today';
+const scrollPos = {};
+function go(t) {
+  if (!TABS.includes(t)) return;
+  if (t === tab) { window.scrollTo({ top: 0, behavior: reducedMotion() ? 'auto' : 'smooth' }); return; }
+  scrollPos[tab] = window.scrollY;
+  const cur = $('#s-' + tab);
+  cur.classList.add('leaving');
+  const prev = tab; tab = t;
+  setTimeout(() => {
+    cur.classList.remove('active', 'leaving');
+    document.body.dataset.tab = t;
+    renderTab(t);
+    $('#s-' + t).classList.add('active');
+    window.scrollTo(0, scrollPos[t] || 0);
+    scene.scroll = t === 'today' ? window.scrollY : 0;
+    if (prev === 'breath') BreathPreview.stop();
+    if (t === 'breath') BreathPreview.start();
+  }, reducedMotion() ? 0 : 150);
+  updateNav();
+  try { localStorage.setItem(KEY + 'tab', t); } catch (e) {}
+}
+function updateNav() {
+  const i = TABS.indexOf(tab);
+  $('#nav-inner').style.setProperty('--i', i);
+  $$('.nav-btn').forEach(b => b.dataset.tab === tab ? b.setAttribute('aria-current', 'page') : b.removeAttribute('aria-current'));
+}
+function renderTab(t) {
+  ({ today: renderToday, library: renderLibrary, breath: renderBreath, records: renderRecords, settings: renderSettings })[t]();
+}
+function rerenderCurrent() {
+  renderTab(tab); renderSide();
+  if ($('#detail').classList.contains('open')) renderDetailBody();
+  if ($('#sleep').classList.contains('open')) renderSleepBody();
+}
+
+/* =========================================================
+   Today
+   ========================================================= */
+const GREET = { morning: '좋은 아침이에요.', day: '잠시 쉬어가도 좋아요.', evening: '오늘도 수고했어요.', night: '이제 마음을 쉬게 해요.' };
+const QUICK = [
+  { label: '3분 휴식', sub: '잠깐 멈추기', icon: 'leaf', prog: 'this-moment', min: 3 },
+  { label: '5분 명상', sub: '가볍게 앉기', icon: 'med', prog: 'first-steps', min: 5 },
+  { label: '10분 집중', sub: '주의를 모으기', icon: 'focus', prog: 'focus-anchor', min: 10 },
+  { label: '자유 명상', sub: '안내 없이 머물기', icon: 'inf', free: 1 },
+];
+let lastTodayKey = '';
+function renderToday() {
+  const tod = timeOfDay(), rec = recommend(), st = computeStats();
+  lastTodayKey = dayKey(new Date()) + tod;
+  const todayMin = st.today > 0 && st.today < 60 ? '<1' : Math.round(st.today / 60);
+  $('#s-today').innerHTML = `
+  <header class="today-head">
+    <p class="eyebrow reveal">${dateLabel()}</p>
+    <h1 class="greet reveal d1">${GREET[tod]}</h1>
+    <p class="greet-sub reveal d2">지금 이 순간에 머물러 보세요.</p>
+  </header>
+  <div class="hero" aria-hidden="true"></div>
+  <div class="today-body">
+    <article class="rec reveal d2" aria-label="오늘의 추천 명상">
+      <p class="eyebrow">${TOD_LABEL[tod]}의 추천 · ${CAT[rec.category].name}</p>
+      <h2 class="rec-title">${rec.title}</h2>
+      <p class="rec-desc">${rec.desc}</p>
+      <div class="rec-foot">
+        <span class="meta num">${rec.minutes}분 · ${LEVEL[rec.level]}</span>
+        <button class="btn primary" data-act="start-program" data-id="${rec.id}">${ic('play')}시작하기</button>
+      </div>
+      <button class="link" data-act="detail" data-id="${rec.id}">자세히 보기</button>
+    </article>
+    <section class="today-stats reveal d3" aria-label="오늘의 명상 기록">
+      <div><span class="label">오늘의 명상</span><span class="big num">${todayMin}<small>분</small></span></div>
+      <div><span class="label">이번 주</span><span class="big num">${st.weekDays}<small>일 명상</small></span></div>
+      ${st.streak > 1 ? `<div><span class="label">이어온 날</span><span class="big num">${st.streak}<small>일</small></span></div>` : ''}
+    </section>
+    <h3 class="sec-title">빠른 시작</h3>
+    <div class="quick-grid reveal d4">
+      ${QUICK.map((q, i) => `<button class="quick-btn" data-act="quick" data-i="${i}">${ic(q.icon)}<span><strong>${q.label}</strong><small>${q.sub}</small></span></button>`).join('')}
+    </div>
+    <div style="margin-top:28px">
+      <button class="row-link" data-act="sleep">${ic('moon')}<span><strong>수면 모드</strong><small>${tod === 'night' ? '빛을 낮추고 천천히 잠으로 향해요' : '잠들기 전, 조용히 쉬는 시간'}</small></span>${ic('chev', 'chev')}</button>
+      <button class="row-link" data-act="mixer">${ic('sound')}<span><strong>소리 믹서</strong><small>${mixSummary(S.settings.mix)}</small></span>${ic('chev', 'chev')}</button>
+      <button class="row-link" data-act="tab" data-tab="library">${ic('med')}<span><strong>명상 둘러보기</strong><small>${PROGRAMS.length}개의 명상 · ${CATS.length}개의 주제</small></span>${ic('chev', 'chev')}</button>
+    </div>
+  </div>`;
+}
+function renderSide() {
+  const st = computeStats(), side = $('#side'); if (!side) return;
+  side.innerHTML = `
+    <div class="side-block"><span class="label">오늘의 명상</span><span class="big num">${Math.round(st.today / 60)}<small>분</small></span></div>
+    <div class="side-block"><span class="label">이번 주</span><span class="big num">${durHTML(st.week)}</span><p class="fine">${st.weekDays}일 동안 머물렀어요</p></div>
+    <div class="side-block"><span class="label">소리</span><p style="margin:4px 0 10px;font-size:14px">${mixSummary(S.settings.mix)}</p><button class="btn ghost sm" data-act="mixer">${ic('sound')}소리 믹서</button></div>
+    <div class="side-block"><span class="label">풍경</span><p style="margin-top:4px;font-size:14px">${THEMES[S.settings.scene].name}</p><p class="fine">${THEMES[S.settings.scene].desc}</p></div>`;
+}
+
+/* =========================================================
+   Library
+   ========================================================= */
+const Lib = { q: '', cat: 'all', time: 'all', level: 'all', fav: false };
+function filterPrograms() {
+  const q = Lib.q.trim().toLowerCase();
+  return PROGRAMS.filter(p => {
+    if (Lib.cat !== 'all' && p.category !== Lib.cat) return false;
+    if (Lib.fav && !S.favs.includes(p.id)) return false;
+    if (Lib.level !== 'all' && String(p.level) !== Lib.level) return false;
+    if (Lib.time === 's' && p.minutes > 5) return false;
+    if (Lib.time === 'm' && (p.minutes < 6 || p.minutes > 15)) return false;
+    if (Lib.time === 'l' && p.minutes < 16) return false;
+    if (q) { const hay = `${p.title} ${p.desc} ${CAT[p.category].name} ${p.env} ${p.steps.join(' ')}`.toLowerCase(); if (!q.split(/\s+/).every(w => hay.includes(w))) return false; }
+    return true;
+  });
+}
+function renderLibrary() {
+  const el = $('#s-library');
+  if (!el.dataset.built) {
+    el.dataset.built = 1;
+    el.innerHTML = `
+    <header class="page-head"><h1>명상</h1><p>지금의 마음에 맞는 시간을 골라 보세요.</p></header>
+    <div style="display:flex;gap:8px;align-items:center">
+      <label class="search" style="flex:1">${ic('search')}<span class="sr">명상 검색</span><input type="search" id="lib-q" placeholder="제목, 주제, 분위기로 찾기" autocomplete="off" enterkeyhint="search"></label>
+      <button class="icon-btn filter-btn" data-act="lib-filter" aria-label="필터" id="lib-filter-btn">${ic('filter')}</button>
+    </div>
+    <div class="cat-row" role="group" aria-label="주제" id="lib-cats"></div>
+    <div id="lib-results"></div>`;
+    $('#lib-q').addEventListener('input', e => { Lib.q = e.target.value; renderLibResults(); });
+  }
+  $('#lib-q').value = Lib.q;
+  renderLibResults();
+}
+function progRow(p) {
+  const fav = S.favs.includes(p.id);
+  return `<li><button class="prog" data-act="detail" data-id="${p.id}"><img class="thumb" alt="" src="${sceneThumb(p.theme, resolvedMode(), 124, 124)}"><span class="prog-txt"><strong>${p.title}</strong><small>${p.desc}</small><em class="num">${p.minutes}분 · ${LEVEL[p.level]} · ${CAT[p.category].name}</em></span></button><button class="fav-btn" data-act="fav" data-id="${p.id}" aria-pressed="${fav}" aria-label="${p.title} 즐겨찾기">${ic('heart')}</button></li>`;
+}
+function renderLibResults() {
+  $('#lib-cats').innerHTML = [['all', '전체'], ['fav', '즐겨찾기'], ...CATS.map(c => [c[0], c[1]])].map(([k, n]) => {
+    const on = k === 'fav' ? Lib.fav : (Lib.cat === k && !(k === 'all' && Lib.fav));
+    return `<button class="chip" data-act="lib-cat" data-k="${k}" aria-pressed="${on}">${k === 'fav' ? ic('heart') : ''}${n}</button>`;
+  }).join('');
+  const n = (Lib.time !== 'all') + (Lib.level !== 'all');
+  const fb = $('#lib-filter-btn'); if (n) fb.dataset.count = n; else delete fb.dataset.count;
+  const list = filterPrograms(), out = $('#lib-results');
+  const plain = !Lib.q && Lib.cat === 'all' && !Lib.fav && !n;
+  if (!list.length) {
+    out.innerHTML = `<div class="empty"><span class="serif">${Lib.fav && !S.favs.length ? '아직 즐겨찾기가 없어요' : '찾는 명상이 없어요'}</span>${Lib.fav && !S.favs.length ? '마음에 드는 명상의 하트를 눌러 모아 보세요.' : '다른 단어나 필터로 찾아보세요.'}</div>`;
+    return;
+  }
+  if (plain) {
+    out.innerHTML = CATS.map(([k, name, desc]) => {
+      const ps = list.filter(p => p.category === k);
+      return `<section class="cat-sec"><h3>${name}</h3><p>${desc}</p><ul class="prog-list">${ps.map(progRow).join('')}</ul></section>`;
+    }).join('');
+  } else {
+    out.innerHTML = `<p class="lib-count num">${list.length}개의 명상</p><ul class="prog-list">${list.map(progRow).join('')}</ul>`;
+  }
+}
+function openLibFilter() {
+  const opt = (key, v, l) => `<button class="chip" data-act="lib-set" data-key="${key}" data-val="${v}" aria-pressed="${Lib[key] === v}">${l}</button>`;
+  const w = Sheet.open(`<h2 class="sheet-title">필터</h2>
+    <h3 class="sec-title" style="margin-top:22px">시간</h3><div class="chips" id="f-time">${opt('time', 'all', '전체')}${opt('time', 's', '5분 이하')}${opt('time', 'm', '6–15분')}${opt('time', 'l', '16분 이상')}</div>
+    <h3 class="sec-title" style="margin-top:22px">난이도</h3><div class="chips" id="f-level">${opt('level', 'all', '전체')}${opt('level', '1', '입문')}${opt('level', '2', '중급')}${opt('level', '3', '심화')}</div>
+    <h3 class="sec-title" style="margin-top:22px">즐겨찾기</h3><div class="chips"><button class="chip" data-act="lib-favtoggle" aria-pressed="${Lib.fav}">${ic('heart')}즐겨찾기만 보기</button></div>
+    <div class="sheet-actions"><button class="btn ghost" data-act="lib-reset">초기화</button><button class="btn primary" data-act="sheet-close" data-autofocus>결과 보기</button></div>`, { label: '필터' });
+  return w;
+}
+
+/* =========================================================
+   Detail page
+   ========================================================= */
+let D = null;
+const detailBack = () => closeDetail(true);
+function openDetail(id) {
+  const p = PROG[id]; if (!p) return;
+  const wasOpen = $('#detail').classList.contains('open');
+  D = { id, minutes: p.minutes, sound: 'rec', voice: S.settings.voice !== 'off', theme: p.theme };
+  const el = $('#detail');
+  el.innerHTML = `<div class="d-hero"><canvas id="d-canvas" aria-hidden="true"></canvas><div class="d-hero-fade"></div>
+    <div class="d-top"><button class="icon-btn glass" data-act="detail-close" aria-label="뒤로">${ic('back')}</button>
+    <button class="icon-btn glass fav-btn" data-act="fav" data-id="${p.id}" aria-pressed="${S.favs.includes(p.id)}" aria-label="즐겨찾기">${ic('heart')}</button></div>
+    <div class="d-hero-txt"><p class="eyebrow">${CAT[p.category].name} · ${LEVEL[p.level]}</p><h1>${p.title}</h1></div></div>
+    <div class="d-body" id="d-body"></div>
+    <div class="cta-bar"><button class="btn primary" data-act="detail-start" id="d-start"></button></div>`;
+  el.scrollTop = 0;
+  renderDetailBody();
+  el.classList.add('open'); document.body.classList.add('locked');
+  if (!wasOpen) Back.push(detailBack);
+  requestAnimationFrame(() => renderStill($('#d-canvas'), D.theme, resolvedMode()));
+}
+function renderDetailBody() {
+  if (!D) return;
+  const p = PROG[D.id], pat = patternOf(p.pattern), body = $('#d-body');
+  const vsup = Voice.supported || GuideAudio.url;
+  body.innerHTML = `
+    <p class="d-desc">${p.desc}</p>
+    <dl class="d-meta"><div><dt>권장 환경</dt><dd>${p.env}</dd></div><div><dt>호흡 리듬</dt><dd class="num">${patternText(pat)}</dd></div></dl>
+    <h3 class="sec-title">시간</h3>
+    <div class="time-pick">
+      <div class="stepper xl"><button data-act="d-min" data-d="-1" aria-label="1분 줄이기">${ic('minus')}</button><span class="val num" aria-live="polite">${D.minutes}<small>분</small></span><button data-act="d-min" data-d="1" aria-label="1분 늘리기">${ic('plus')}</button></div>
+      <div class="chips">${[...new Set([p.minutes, 5, 10, 15, 20])].sort((a, b) => a - b).map(m => `<button class="chip sm" data-act="d-minset" data-m="${m}" aria-pressed="${D.minutes === m}">${m}분${m === p.minutes ? ' · 기본' : ''}</button>`).join('')}</div>
+    </div>
+    <h3 class="sec-title">진행 방식</h3>
+    <ol class="steps">${p.steps.map(s => `<li><span>${s}</span></li>`).join('')}</ol>
+    <h3 class="sec-title">안내</h3>
+    <div class="group">
+      <div class="row"><div class="row-txt"><span>안내 문구 표시</span><small>화면 가운데에 부드럽게 표시돼요</small></div><button class="switch" role="switch" aria-checked="${S.settings.showGuide}" aria-label="안내 문구 표시" data-act="toggle" data-key="showGuide"></button></div>
+      <div class="row"><div class="row-txt"><span>안내 음성</span><small>${!vsup ? '이 브라우저는 음성 합성을 지원하지 않아 텍스트로 안내해요' : S.settings.voice === 'upload' && GuideAudio.url ? `내 안내 음원 · ${esc(GuideAudio.name)}` : '브라우저 내장 합성 음성 · 기기마다 음색이 달라요'}</small></div><button class="switch" role="switch" aria-checked="${D.voice && !!vsup}" ${vsup ? '' : 'disabled'} aria-label="안내 음성" data-act="d-voice"></button></div>
+    </div>
+    <h3 class="sec-title">배경 소리</h3>
+    <div class="chips">
+      <button class="chip" data-act="d-sound" data-v="rec" aria-pressed="${D.sound === 'rec'}">추천 · ${mixSummary(p.mix).replace(/ \d+%/g, '')}</button>
+      <button class="chip" data-act="d-sound" data-v="mine" aria-pressed="${D.sound === 'mine'}">내 믹스</button>
+      <button class="chip" data-act="d-sound" data-v="none" aria-pressed="${D.sound === 'none'}">무음</button>
+    </div>
+    <p class="fine" style="margin-top:10px">${D.sound === 'mine' ? mixSummary(S.settings.mix) + ' · ' : ''}<button class="link" data-act="mixer">소리 믹서 열기</button></p>
+    <h3 class="sec-title">풍경</h3>
+    <div class="themes" role="radiogroup" aria-label="명상 풍경">${Object.keys(THEMES).map(k => `<button class="theme-sw" role="radio" aria-checked="${D.theme === k}" data-act="d-theme" data-k="${k}"><img alt="" src="${sceneThumb(k, resolvedMode())}"><span>${THEMES[k].ko}</span></button>`).join('')}</div>`;
+  $('#d-start').innerHTML = `${ic('play')}시작하기 · ${D.minutes}분`;
+}
+function closeDetail(fromPop) {
+  const el = $('#detail'); if (!el.classList.contains('open')) return;
+  if (!fromPop) Back.drop(detailBack);
+  el.classList.remove('open');
+  if (!$('#sleep').classList.contains('open')) document.body.classList.remove('locked');
+}
+function programCfg(p, { minutes = p.minutes, sound = 'rec', voice = S.settings.voice !== 'off', theme = p.theme } = {}) {
+  return {
+    kind: 'meditation', programId: p.id, title: p.title, durationSec: Math.round(minutes * 60), pattern: patternOf(p.pattern),
+    mix: sound === 'rec' ? { ...p.mix } : soundMix(sound), theme, voice: voiceMode(voice), script: p.script, chimeEnd: true,
+  };
+}
+function freeCfg(minutes) {
+  return { kind: 'meditation', programId: 'free', title: '자유 명상', durationSec: minutes * 60, pattern: patternOf(S.settings.pattern), mix: { ...S.settings.mix }, theme: S.settings.scene, voice: 'off', script: null, free: true, chimeEnd: true };
+}
+function openFreeSheet() {
+  let m = S.settings.duration;
+  const w = Sheet.open(`<h2 class="sheet-title">자유 명상</h2><p class="sheet-sub">안내 없이 소리와 호흡만으로 머물러요.</p>
+    <div style="display:flex;justify-content:center;margin:28px 0 8px"><div class="stepper xl"><button data-k="-" aria-label="1분 줄이기">${ic('minus')}</button><span class="val num" id="free-m">${m}<small>분</small></span><button data-k="+" aria-label="1분 늘리기">${ic('plus')}</button></div></div>
+    <div class="chips" style="justify-content:center">${[3, 5, 10, 15, 20, 30].map(x => `<button class="chip sm" data-m="${x}">${x}분</button>`).join('')}</div>
+    <div class="sheet-actions"><button class="btn primary" data-k="go" data-autofocus>${ic('play')}시작하기</button></div>`, { label: '자유 명상' });
+  const upd = () => $('#free-m', w).innerHTML = `${m}<small>분</small>`;
+  w.addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    if (b.dataset.k === '-') { m = clamp(m - 1, 1, 120); upd(); }
+    else if (b.dataset.k === '+') { m = clamp(m + 1, 1, 120); upd(); }
+    else if (b.dataset.m) { m = +b.dataset.m; upd(); }
+    else if (b.dataset.k === 'go') { Sheet.close(); Player.open(freeCfg(m)); }
+  });
+}
+
+/* =========================================================
+   Breath tab
+   ========================================================= */
+const BreathPreview = {
+  orb: null, t0: 0, on: false, lastKey: '',
+  start() {
+    const cv = $('#b-canvas'); if (!cv) return;
+    if (!this.orb || this.orb.cv !== cv) this.orb = new Orb(cv, true);
+    this.orb.size = 0; this.orb.resize(); this.t0 = performance.now();
+    if (!this.on) { this.on = true; Loop.add(this.frame); }
+  },
+  stop() { this.on = false; Loop.remove(this.frame); },
+  restart() { this.t0 = performance.now(); },
+  frame: now => {
+    const B = BreathPreview; if (!B.orb || Player.active || document.hidden) return;
+    const pat = patternOf(S.settings.breath.pattern), b = breathAt(pat, (now - B.t0) / 1000);
+    B.orb.draw(now, { scale: reducedMotion() && S.settings.textOnly ? .5 : b.scale, phase: b.phase, p: b.p, motion: 1 });
+    const key = b.phase + Math.ceil(b.remain);
+    if (key !== B.lastKey) { B.lastKey = key; const ph = $('#b-ph'), ct = $('#b-ct'); if (ph) { ph.textContent = PH_LABEL[b.phase]; ct.textContent = Math.ceil(b.remain); } }
+  },
+};
+function renderBreath() {
+  const B = S.settings.breath, c = B.custom;
+  const stp = (path, val, min, max, label, unit = '초') => `<label>${label}<div class="stepper"><button data-act="step" data-path="${path}" data-d="-1" data-min="${min}" data-max="${max}" aria-label="${label} 줄이기">${ic('minus')}</button><span class="val num">${val}<small>${unit}</small></span><button data-act="step" data-path="${path}" data-d="1" data-min="${min}" data-max="${max}" aria-label="${label} 늘리기">${ic('plus')}</button></div></label>`;
+  $('#s-breath').innerHTML = `
+    <header class="page-head"><h1>호흡</h1><p>편안한 리듬으로 숨을 고르는 시간</p></header>
+    <div class="b-stage" data-act="b-ripple"><canvas id="b-canvas" aria-hidden="true"></canvas><div class="b-center"><span class="ph" id="b-ph">들숨</span><span class="ct num" id="b-ct">4</span></div></div>
+    <p class="fine" style="text-align:center;margin-top:6px">미리보기 · ${patternText(patternOf(B.pattern))}</p>
+    <h3 class="sec-title">호흡 패턴</h3>
+    <ul class="pat-list" role="radiogroup" aria-label="호흡 패턴">${Object.entries(PATTERNS).map(([k, p]) => `<li><button class="pat" role="radio" aria-checked="${B.pattern === k}" data-act="set" data-path="breath.pattern" data-val="${k}"><i class="dot"></i><span><strong>${p.name}</strong><small>${k === 'custom' ? patternText(c) : p.desc}</small></span></button></li>`).join('')}</ul>
+    ${B.pattern === 'custom' ? `<div class="custom-grid">${stp('breath.custom.in', c.in, 2, 12, '들숨')}${stp('breath.custom.h1', c.h1, 0, 10, '들숨 후 유지')}${stp('breath.custom.out', c.out, 2, 14, '날숨')}${stp('breath.custom.h2', c.h2, 0, 10, '날숨 후 유지')}</div>` : ''}
+    <p class="note">숨을 참는 구간이 불편하면 유지 시간을 0으로 두거나, 연습 중에 ‘유지 구간 건너뛰기’를 눌러도 괜찮아요. 어지럽거나 답답하면 바로 멈추고 평소 호흡으로 돌아오세요. 이 연습은 휴식을 위한 것이며 치료 목적이 아니에요.</p>
+    <h3 class="sec-title">훈련 시간</h3>
+    <div class="time-pick"><div class="stepper xl"><button data-act="step" data-path="breath.minutes" data-d="-1" data-min="1" data-max="60" aria-label="1분 줄이기">${ic('minus')}</button><span class="val num">${B.minutes}<small>분</small></span><button data-act="step" data-path="breath.minutes" data-d="1" data-min="1" data-max="60" aria-label="1분 늘리기">${ic('plus')}</button></div>
+    <div class="chips">${[1, 3, 5, 10, 15].map(m => `<button class="chip sm" data-act="set" data-path="breath.minutes" data-val="${m}" data-num="1" aria-pressed="${B.minutes === m}">${m}분</button>`).join('')}</div></div>
+    <h3 class="sec-title">배경 소리</h3>
+    <div class="chips">${[['mine', '내 믹스'], ['none', '무음'], ...SOUNDS].map(([k, n]) => `<button class="chip sm" data-act="set" data-path="breath.sound" data-val="${k}" aria-pressed="${B.sound === k}">${n}</button>`).join('')}</div>
+    <h3 class="sec-title">알림과 안내</h3>
+    <div class="group">
+      <div class="row"><div class="row-txt"><span>시작 알림</span><small>부드러운 종소리로 시작해요</small></div><button class="switch" role="switch" aria-checked="${B.startChime}" aria-label="시작 알림" data-act="toggle" data-key="breath.startChime"></button></div>
+      <div class="row"><div class="row-txt"><span>종료 알림</span></div><button class="switch" role="switch" aria-checked="${B.endChime}" aria-label="종료 알림" data-act="toggle" data-key="breath.endChime"></button></div>
+      <div class="row"><div class="row-txt"><span>음성 안내</span><small>${Voice.supported ? '단계가 바뀔 때 짧게 말해 줘요' : '이 브라우저는 음성 합성을 지원하지 않아요'}</small></div><button class="switch" role="switch" aria-checked="${B.voice && Voice.supported}" ${Voice.supported ? '' : 'disabled'} aria-label="음성 안내" data-act="toggle" data-key="breath.voice"></button></div>
+    </div>
+    <div style="margin-top:32px"><button class="btn primary wide" data-act="breath-start">${ic('play')}호흡 시작하기 · ${B.minutes}분</button></div>`;
+  if (tab === 'breath') requestAnimationFrame(() => BreathPreview.start());
+}
+function breathCfg() {
+  const B = S.settings.breath;
+  return { kind: 'breath', programId: 'breath-' + B.pattern, title: PATTERNS[B.pattern].name, durationSec: B.minutes * 60, pattern: patternOf(B.pattern), mix: soundMix(B.sound), theme: S.settings.scene, voice: B.voice ? 'tts' : 'off', chimeStart: B.startChime, chimeEnd: B.endChime };
+}
+
+/* =========================================================
+   Sleep mode
+   ========================================================= */
+const sleepBack = () => closeSleep(true);
+function openSleep() {
+  const el = $('#sleep');
+  el.innerHTML = `<div class="d-hero" style="height:clamp(240px,40vh,380px)"><canvas id="sl-canvas" aria-hidden="true"></canvas><div class="d-hero-fade"></div>
+    <div class="d-top"><button class="icon-btn glass" data-act="sleep-close" aria-label="뒤로">${ic('back')}</button></div>
+    <div class="d-hero-txt"><p class="eyebrow">SLEEP</p><h1>수면 모드</h1></div></div>
+    <div class="d-body" id="sl-body"></div>
+    <div class="cta-bar"><button class="btn primary" data-act="sleep-start" id="sl-start"></button></div>`;
+  el.scrollTop = 0; renderSleepBody();
+  el.classList.add('open'); document.body.classList.add('locked');
+  Back.push(sleepBack);
+  requestAnimationFrame(() => renderStill($('#sl-canvas'), 'lake', 'dark'));
+}
+function renderSleepBody() {
+  const L = S.settings.sleep, body = $('#sl-body'); if (!body) return;
+  const presets = [10, 20, 30, 45, 60];
+  body.innerHTML = `
+    <p class="d-desc">빛과 소리를 낮추고, 천천히 쉬는 시간이에요. 시간이 끝나면 소리가 아주 천천히 작아지며 멈춰요.</p>
+    <h3 class="sec-title">수면 타이머</h3>
+    <div class="chips">${presets.map(m => `<button class="chip" data-act="set" data-path="sleep.minutes" data-val="${m}" data-num="1" aria-pressed="${L.minutes === m}">${m}분</button>`).join('')}<button class="chip" data-act="sleep-custom" aria-pressed="${!presets.includes(L.minutes)}">직접 설정${presets.includes(L.minutes) ? '' : ` · ${L.minutes}분`}</button></div>
+    <div id="sl-custom" ${presets.includes(L.minutes) ? 'hidden' : ''} style="margin-top:14px"><div class="stepper xl"><button data-act="step" data-path="sleep.minutes" data-d="-5" data-min="5" data-max="180" aria-label="5분 줄이기">${ic('minus')}</button><span class="val num">${L.minutes}<small>분</small></span><button data-act="step" data-path="sleep.minutes" data-d="5" data-min="5" data-max="180" aria-label="5분 늘리기">${ic('plus')}</button></div></div>
+    <h3 class="sec-title">수면 전 루틴</h3>
+    <div class="group"><div class="row"><div class="row-txt"><span>루틴 안내 받기</span><small>네 단계를 천천히 안내해요</small></div><button class="switch" role="switch" aria-checked="${L.routine}" aria-label="루틴 안내" data-act="toggle" data-key="sleep.routine"></button></div></div>
+    <ol class="routine" style="${L.routine ? '' : 'opacity:.45'}">${SLEEP_ROUTINE.map(([t, d]) => `<li><span>${t}<small>${d}</small></span></li>`).join('')}</ol>
+    <div class="group" style="margin-top:8px"><div class="row"><div class="row-txt"><span>음성으로 안내</span><small>${Voice.supported ? '아주 작은 목소리로 루틴을 읽어 줘요' : '이 브라우저는 음성 합성을 지원하지 않아요'}</small></div><button class="switch" role="switch" aria-checked="${L.voice && Voice.supported}" ${Voice.supported ? '' : 'disabled'} aria-label="음성 안내" data-act="toggle" data-key="sleep.voice"></button></div></div>
+    <h3 class="sec-title">자연의 소리</h3>
+    <div class="chips">${[...SOUNDS.filter(s => s[0] !== 'white'), ['none', '무음']].map(([k, n]) => `<button class="chip sm" data-act="set" data-path="sleep.sound" data-val="${k}" aria-pressed="${L.sound === k}">${n}</button>`).join('')}</div>
+    <p class="note">수면 모드는 편안히 쉬도록 돕는 도구이며, 잠이나 건강 효과를 보장하지 않아요. 휴대폰 화면이 잠기거나 브라우저가 백그라운드로 가면 기기 정책에 따라 소리가 멈출 수 있어요.</p>`;
+  $('#sl-start').innerHTML = `${ic('moon')}수면 모드 시작 · ${L.minutes}분`;
+}
+function closeSleep(fromPop) {
+  const el = $('#sleep'); if (!el.classList.contains('open')) return;
+  if (!fromPop) Back.drop(sleepBack);
+  el.classList.remove('open');
+  if (!$('#detail').classList.contains('open')) document.body.classList.remove('locked');
+}
+function sleepCfg() {
+  const L = S.settings.sleep;
+  return { kind: 'sleep', programId: 'sleep', title: '수면 모드', durationSec: L.minutes * 60, pattern: { in: 4, h1: 0, out: 7, h2: 0 }, mix: soundMix(L.sound), theme: 'lake', voice: L.voice ? 'tts' : 'off', routine: L.routine };
+}
+
+/* =========================================================
+   Records
+   ========================================================= */
+let jrLimit = 15;
+function renderRecords() {
+  const st = computeStats();
+  const today = startOfDay(new Date());
+  const days = Array.from({ length: 7 }, (_, i) => { const d = new Date(today); d.setDate(d.getDate() - 6 + i); return d; });
+  const vals = days.map(d => st.byDay[dayKey(d)] || 0), max = Math.max(...vals, 600);
+  const weeks = 20, start = new Date(today); start.setDate(start.getDate() - ((start.getDay() + 6) % 7) - (weeks - 1) * 7);
+  const cells = [];
+  for (let i = 0; i < weeks * 7; i++) {
+    const d = new Date(start); d.setDate(start.getDate() + i);
+    const k = dayKey(d), sec = st.byDay[k] || 0, m = sec / 60, future = d > today;
+    const l = sec <= 0 ? 0 : m < 5 ? 1 : m < 15 ? 2 : m < 30 ? 3 : 4;
+    cells.push(`<button class="cell${future ? ' future' : ''}${k === dayKey(today) ? ' is-today' : ''}" data-l="${l}" data-act="day" data-k="${k}" ${future ? 'tabindex="-1" aria-hidden="true"' : ''} aria-label="${d.getMonth() + 1}월 ${d.getDate()}일, ${sec ? fmtDur(sec) : '기록 없음'}"></button>`);
+  }
+  const recs = [...S.records].sort((a, b) => b.startedAt - a.startedAt);
+  $('#s-records').innerHTML = `
+    <header class="page-head"><h1>기록</h1><p>조용히 쌓여 가는 나의 시간</p></header>
+    <section class="stats-grid" aria-label="통계">
+      <div class="stat"><span class="label">총 명상 시간</span><span class="val num">${durHTML(st.total)}</span></div>
+      <div class="stat"><span class="label">완료한 명상</span><span class="val num">${st.count}<small>회</small></span></div>
+      <div class="stat"><span class="label">이번 주</span><span class="val num">${durHTML(st.week)}</span></div>
+      <div class="stat"><span class="label">이번 달</span><span class="val num">${durHTML(st.month)}</span></div>
+      <div class="stat"><span class="label">이어온 날</span><span class="val num">${st.streak}<small>일</small></span></div>
+      <div class="stat"><span class="label">자주 찾는 명상</span><span class="val txt">${st.top ? esc(st.top.title) : '—'}</span></div>
+    </section>
+    ${!S.records.length ? `<p class="note" style="margin-top:20px">아직 기록이 없어요. 첫 명상을 마치면 이곳에 조용히 쌓여요. 모든 숫자는 이 기기에서 실제로 완료한 명상만 계산해요.</p>` : ''}
+    <h3 class="sec-title">지난 7일</h3>
+    <div class="bars" role="list">${days.map((d, i) => `<button class="bar${i === 6 ? ' today' : ''}" role="listitem" data-act="bar" style="--h:${(vals[i] / max).toFixed(3)}" aria-label="${d.getMonth() + 1}월 ${d.getDate()}일 ${WD[d.getDay()]}요일, ${vals[i] ? fmtDur(vals[i]) : '기록 없음'}"><span class="bar-track"><span class="bar-fill" data-h="${(vals[i] / max * 100).toFixed(1)}"></span><span class="bar-tip num">${vals[i] ? fmtDur(vals[i]) : '0분'}</span></span><span class="bar-lab">${i === 6 ? '오늘' : WD[d.getDay()]}</span></button>`).join('')}</div>
+    <h3 class="sec-title">명상 캘린더</h3>
+    <div class="heat-wrap"><div class="heat-days" aria-hidden="true">${['월', '', '수', '', '금', '', ''].map(x => `<span>${x}</span>`).join('')}</div><div class="heat">${cells.join('')}</div></div>
+    <div class="legend" aria-hidden="true">적게 <i></i><i style="background:rgba(var(--tr),.24)"></i><i style="background:rgba(var(--tr),.42)"></i><i style="background:rgba(var(--tr),.64)"></i><i style="background:rgba(var(--tr),.9)"></i> 많이</div>
+    <h3 class="sec-title">명상 일지</h3>
+    ${recs.length ? `<ul class="jr-list">${recs.slice(0, jrLimit).map(jrItem).join('')}</ul>${recs.length > jrLimit ? `<button class="btn quiet" data-act="jr-more" style="margin-top:8px">더 보기 (${recs.length - jrLimit})</button>` : ''}` : `<p class="fine">명상을 마친 뒤 기분과 짧은 메모를 남길 수 있어요.</p>`}
+    <h3 class="sec-title">기록 관리</h3>
+    <div class="data-actions"><button class="btn ghost sm" data-act="export">${ic('download')}내보내기</button><button class="btn ghost sm" data-act="import">${ic('upload')}가져오기</button><button class="btn quiet sm" data-act="reset-records">${ic('trash')}기록 초기화</button></div>
+    <p class="fine" style="margin-top:12px">기록은 이 기기의 브라우저에만 저장되며 어디에도 전송되지 않아요.</p>`;
+  requestAnimationFrame(() => requestAnimationFrame(() => $$('#s-records .bar-fill').forEach((b, i) => { b.style.transitionDelay = (i * 60) + 'ms'; b.style.height = b.dataset.h + '%'; })));
+}
+function jrItem(r) {
+  const d = new Date(r.startedAt);
+  return `<li class="jr"><div class="jr-head num"><span>${d.getMonth() + 1}.${d.getDate()} (${WD[d.getDay()]}) ${pad2(d.getHours())}:${pad2(d.getMinutes())}</span><span>${r.completed ? '완료' : '중간에 마침'}</span></div>
+    <p class="jr-title">${esc(r.title)} <span class="num">· ${fmtDur(r.actualSec)}</span></p>
+    ${r.mood ? `<span class="tag">${MOODS[r.mood]}</span>` : ''}${r.note ? `<p class="jr-note">${esc(r.note)}</p>` : ''}
+    <div class="jr-actions"><button data-act="journal" data-id="${r.id}">${r.mood || r.note ? '일지 수정' : '일지 쓰기'}</button><button data-act="del-record" data-id="${r.id}">기록 삭제</button></div></li>`;
+}
+function moodChips(sel) { return Object.entries(MOODS).map(([k, n]) => `<button class="chip" data-mood="${k}" aria-pressed="${sel === k}">${n}</button>`).join(''); }
+function openJournal(id) {
+  const r = Records.get(id); if (!r) return;
+  let mood = r.mood;
+  const w = Sheet.open(`<h2 class="sheet-title">명상 일지</h2><p class="sheet-sub">${esc(r.title)} · ${fmtDur(r.actualSec)}</p>
+    <div class="mood-grid" role="group" aria-label="기분">${moodChips(mood)}</div>
+    <label class="sr" for="jr-note">메모</label><textarea id="jr-note" maxlength="1000" placeholder="떠오른 생각이나 느낌을 자유롭게 적어 보세요.">${esc(r.note)}</textarea>
+    <div class="sheet-actions">${r.note || r.mood ? '<button class="btn ghost" data-k="clear">일지 지우기</button>' : ''}<button class="btn primary" data-k="save">저장</button></div>`, { label: '명상 일지' });
+  w.addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    if (b.dataset.mood) { mood = mood === b.dataset.mood ? null : b.dataset.mood; $$('[data-mood]', w).forEach(x => x.setAttribute('aria-pressed', x.dataset.mood === mood)); }
+    if (b.dataset.k === 'save') { Records.update(id, { mood, note: $('#jr-note', w).value.trim().slice(0, 1000) }); Sheet.close(); toast('일지를 저장했어요.'); renderRecords(); }
+    if (b.dataset.k === 'clear') { Records.update(id, { mood: null, note: '' }); Sheet.close(); toast('일지를 지웠어요.'); renderRecords(); }
+  });
+}
+function openDay(k) {
+  const recs = S.records.filter(r => dayKey(r.startedAt) === k).sort((a, b) => a.startedAt - b.startedAt);
+  const [y, m, d] = k.split('-').map(Number), dt = new Date(y, m - 1, d);
+  const total = recs.filter(r => r.completed).reduce((a, r) => a + r.actualSec, 0);
+  Sheet.open(`<h2 class="sheet-title">${m}월 ${d}일 ${WD[dt.getDay()]}요일</h2><p class="sheet-sub">${recs.length ? `완료한 명상 ${fmtDur(total)}` : '이날은 기록이 없어요.'}</p>
+    ${recs.length ? `<ul class="jr-list" style="margin-top:10px">${recs.map(jrItem).join('')}</ul>` : ''}
+    <div class="sheet-actions"><button class="btn ghost" data-act="sheet-close" data-autofocus>닫기</button></div>`, { label: '날짜별 기록' });
+}
+
+/* ---------- export / import ---------- */
+function exportData() {
+  const data = { app: 'goyo', version: 1, exportedAt: new Date().toISOString(), records: S.records, favorites: S.favs, settings: S.settings };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `goyo-records-${dayKey(new Date())}.json`;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  toast(`${S.records.length}개의 기록을 내보냈어요.`);
+}
+function importData(file) {
+  if (!file) return;
+  if (file.size > 10 * 1024 * 1024) { toast('파일이 너무 커요. 10MB 이하의 GOYO 기록 파일을 선택해 주세요.'); return; }
+  const fr = new FileReader();
+  fr.onload = () => {
+    let data;
+    try { data = JSON.parse(fr.result); } catch (e) { toast('JSON 형식이 아니에요. GOYO에서 내보낸 파일인지 확인해 주세요.'); return; }
+    const list = Array.isArray(data) ? data : data && data.app === 'goyo' && Array.isArray(data.records) ? data.records : null;
+    if (!list) { toast('GOYO 기록 파일 형식이 아니에요.'); return; }
+    const ids = new Set(S.records.map(r => r.id)), sig = new Set(S.records.map(r => r.startedAt + '|' + r.title));
+    let added = 0, dup = 0, bad = 0;
+    list.forEach(r => {
+      if (!validRecord(r)) { bad++; return; }
+      const n = normRecord(r), s = n.startedAt + '|' + n.title;
+      if (ids.has(n.id) || sig.has(s)) { dup++; return; }
+      ids.add(n.id); sig.add(s); S.records.push(n); added++;
+    });
+    if (data && Array.isArray(data.favorites)) data.favorites.forEach(id => { if (PROG[id] && !S.favs.includes(id)) S.favs.push(id); });
+    saveRecords(); saveFavs();
+    toast(`${added}개를 가져왔어요${dup ? ` · 중복 ${dup}개 건너뜀` : ''}${bad ? ` · 형식 오류 ${bad}개 제외` : ''}`, 4500);
+    rerenderCurrent();
+  };
+  fr.onerror = () => toast('파일을 읽지 못했어요.');
+  fr.readAsText(file);
+}
+
+/* =========================================================
+   Settings
+   ========================================================= */
+function seg(path, opts) {
+  const v = getPath(S.settings, path);
+  return `<div class="seg" role="radiogroup">${opts.map(([val, l]) => `<button role="radio" aria-checked="${v === val}" data-act="set" data-path="${path}" data-val="${val}">${l}</button>`).join('')}</div>`;
+}
+function sw(path, label, desc = '', disabled = false) {
+  const v = getPath(S.settings, path);
+  return `<div class="row"><div class="row-txt"><span>${label}</span>${desc ? `<small>${desc}</small>` : ''}</div><button class="switch" role="switch" aria-checked="${!!v && !disabled}" ${disabled ? 'disabled' : ''} aria-label="${label}" data-act="toggle" data-key="${path}"></button></div>`;
+}
+function stepRow(path, label, min, max, unit, d = 1) {
+  const v = getPath(S.settings, path);
+  return `<div class="row"><div class="row-txt"><span>${label}</span></div><div class="stepper"><button data-act="step" data-path="${path}" data-d="${-d}" data-min="${min}" data-max="${max}" aria-label="${label} 줄이기">${ic('minus')}</button><span class="val num">${v}<small>${unit}</small></span><button data-act="step" data-path="${path}" data-d="${d}" data-min="${min}" data-max="${max}" aria-label="${label} 늘리기">${ic('plus')}</button></div></div>`;
+}
+function renderSettings() {
+  const s = S.settings, fsOK = !!(document.documentElement.requestFullscreen || document.documentElement.webkitRequestFullscreen);
+  const vOpts = Voice.voices.length ? Voice.voices.map(v => `<option value="${esc(v.voiceURI)}" ${v.voiceURI === s.voiceURI ? 'selected' : ''}>${esc(v.name)}</option>`).join('') : '';
+  $('#s-settings').innerHTML = `
+    <header class="page-head"><h1>설정</h1><p>나에게 맞는 고요를 만들어요.</p></header>
+    <h3 class="sec-title" style="margin-top:8px">외관</h3>
+    <div class="group">
+      <div class="row col"><div class="row-txt"><span>화면 모드</span></div>${seg('appearance', [['system', '시스템'], ['dark', '다크'], ['light', '라이트']])}</div>
+      <div class="row col"><div class="row-txt"><span>움직임</span><small>‘줄이기’는 풍경과 구체의 움직임을 최소화해요</small></div>${seg('motion', [['system', '시스템'], ['full', '기본'], ['reduce', '줄이기']])}</div>
+      <div class="row col"><div class="row-txt"><span>배경 효과</span><small>기기가 느리면 자동으로 단순해져요${autoLow ? ' · 지금은 성능을 위해 정적 풍경으로 표시 중' : ''}</small></div>${seg('effects', [['high', '풍부하게'], ['medium', '보통'], ['low', '정적']])}</div>
+      <div class="row col"><div class="row-txt"><span>앱 풍경</span><small>${THEMES[s.scene].name} · ${THEMES[s.scene].desc}</small></div>
+        <div class="themes" role="radiogroup" aria-label="앱 풍경">${Object.keys(THEMES).map(k => `<button class="theme-sw" role="radio" aria-checked="${s.scene === k}" data-act="set" data-path="scene" data-val="${k}"><img alt="" src="${sceneThumb(k, resolvedMode())}"><span>${THEMES[k].ko}</span></button>`).join('')}</div></div>
+    </div>
+    <h3 class="sec-title">명상</h3>
+    <div class="group">
+      ${stepRow('duration', '기본 명상 시간', 1, 120, '분')}
+      <div class="row col"><div class="row-txt"><span>기본 호흡 패턴</span><small>자유 명상의 호흡 구체가 이 리듬을 따라요</small></div>${seg('pattern', [['balance', '균형'], ['relax', '편안'], ['box', '박스'], ['custom', '자유']])}</div>
+      ${sw('showGuide', '안내 문구 표시')}
+      ${sw('alwaysControls', '조작 버튼 항상 표시', '명상 중에 버튼이 자동으로 숨지 않아요')}
+      ${sw('textOnly', '텍스트와 숫자로만 보기', '움직이는 호흡 구체 대신 단계와 초를 보여 줘요')}
+      ${sw('hideTime', 'Zen 모드에서 시간 숨기기')}
+      ${sw('zenFullscreen', 'Zen 모드에서 전체 화면', fsOK ? '' : '이 브라우저에서는 전체 화면을 지원하지 않아요', !fsOK)}
+      <div class="row"><div class="row-txt"><span>완료 알림음</span><small>명상이 끝나면 부드러운 종소리가 한 번 울려요</small></div><div style="display:flex;gap:6px;align-items:center"><button class="btn quiet sm" data-act="chime-test">듣기</button><button class="switch" role="switch" aria-checked="${s.chime}" aria-label="완료 알림음" data-act="toggle" data-key="chime"></button></div></div>
+    </div>
+    <h3 class="sec-title">안내 음성</h3>
+    <div class="group">
+      <div class="row col"><div class="row-txt"><span>안내 방식</span><small>${Voice.supported ? '브라우저 음성은 기기에 내장된 합성 음성이라 자연스러움에 한계가 있어요' : '이 브라우저는 음성 합성을 지원하지 않아요. 텍스트 안내나 내 음원을 사용할 수 있어요'}</small></div>${seg('voice', [['off', '끄기'], ['tts', '브라우저 음성'], ['upload', '내 음원']])}</div>
+      ${s.voice === 'tts' ? `
+      <div class="row"><div class="row-txt"><span>한국어 음성</span>${Voice.voices.length ? '' : '<small>사용 가능한 한국어 음성을 찾지 못했어요. 기본 음성으로 시도하고, 실패하면 텍스트로 안내해요</small>'}</div>${Voice.voices.length ? `<select data-path="voiceURI" aria-label="한국어 음성">${vOpts}</select>` : ''}</div>
+      <div class="row col"><div class="mix-top"><span>말하기 속도</span><span class="num" id="rate-v">${s.rate.toFixed(2)}×</span></div><input type="range" min="0.6" max="1.3" step="0.05" value="${s.rate}" data-path="rate" aria-label="말하기 속도" style="--p:${((s.rate - .6) / .7 * 100).toFixed(1)}%"><button class="btn ghost sm" data-act="voice-test" style="align-self:flex-start">미리 듣기</button></div>` : ''}
+      ${s.voice === 'upload' ? `
+      <div class="row col"><div class="row-txt"><span>내 안내 음원</span><small>${GuideAudio.url ? esc(GuideAudio.name) : '직접 녹음했거나 이용 권한이 있는 음원을 올려 주세요. 기기 안에만 저장돼요'}</small></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn ghost sm" data-act="guide-upload">${ic('upload')}${GuideAudio.url ? '바꾸기' : '음원 올리기'}</button>${GuideAudio.url ? `<button class="btn ghost sm" data-act="guide-test">재생 확인</button><button class="btn quiet sm" data-act="guide-del">${ic('trash')}삭제</button>` : ''}</div></div>` : ''}
+    </div>
+    <h3 class="sec-title">사운드</h3>
+    <div class="group">
+      <div class="row col"><div class="mix-top"><span>전체 볼륨</span><span class="num" id="vol-v">${Math.round(s.volume * 100)}%</span></div><input type="range" min="0" max="100" step="1" value="${Math.round(s.volume * 100)}" data-path="volume" data-scale="100" aria-label="전체 볼륨" style="--p:${s.volume * 100}%"></div>
+      <button class="row-link" data-act="mixer">${ic('sound')}<span><strong>기본 자연의 소리</strong><small>${mixSummary(s.mix)}</small></span>${ic('chev', 'chev')}</button>
+      ${stepRow('fadeIn', '시작 페이드', 0, 20, '초')}
+      ${stepRow('fadeOut', '종료 페이드', 0, 30, '초')}
+    </div>
+    <p class="fine" style="margin-top:12px">모든 자연의 소리는 녹음 파일이 아니라 Web Audio로 실시간 생성한 소리예요. 브라우저 정책상 첫 터치 이후에 소리가 켜지며, 화면이 잠기거나 앱이 백그라운드로 가면 기기에 따라 소리가 멈출 수 있어요.</p>
+    <h3 class="sec-title">데이터</h3>
+    <div class="group">
+      <button class="row-link" data-act="export">${ic('download')}<span><strong>기록 내보내기</strong><small>JSON 파일로 저장해요</small></span>${ic('chev', 'chev')}</button>
+      <button class="row-link" data-act="import">${ic('upload')}<span><strong>기록 가져오기</strong><small>형식을 확인하고 중복 없이 합쳐요</small></span>${ic('chev', 'chev')}</button>
+      <button class="row-link" data-act="onboarding">${ic('leaf')}<span><strong>처음 안내 다시 보기</strong><small>목적과 시간을 다시 정해요</small></span>${ic('chev', 'chev')}</button>
+      <button class="row-link" data-act="reset-all">${ic('trash')}<span><strong>모든 데이터 초기화</strong><small>기록, 설정, 즐겨찾기를 모두 지워요</small></span>${ic('chev', 'chev')}</button>
+    </div>
+    <p class="fine" style="margin:28px 0 0;text-align:center">GOYO 고요 · 모든 데이터는 이 기기에만 저장돼요</p>`;
+}
+function setSetting(path, val, { render = true } = {}) {
+  setPath(S.settings, path, val);
+  clampSettings(S.settings); saveSettings();
+  const root = path.split('.')[0];
+  if (['appearance', 'motion', 'effects'].includes(root)) applyAppearance();
+  if (root === 'scene' && !Player.active) setSceneTheme(S.settings.scene);
+  if (root === 'volume') Sound.setVolume(S.settings.volume);
+  if (path === 'breath.pattern' || path.startsWith('breath.custom')) BreathPreview.restart();
+  if (path === 'textOnly' && Player.active) Player.applyClasses();
+  if (render) rerenderCurrent();
+}
+
+/* =========================================================
+   Sound mixer sheet
+   ========================================================= */
+function openMixer() {
+  const inSession = Player.active && Player.cfg && Player.state !== 'done';
+  const target = inSession ? Player.cfg.mix : S.settings.mix;
+  const ctx = Sound.ensure();
+  if (!ctx) toast('이 브라우저는 Web Audio를 지원하지 않아 소리를 재생할 수 없어요.');
+  if (!inSession && ctx) { Sound.applyMix(target, .3); Sound.fadeTo(1, .8); }
+  const row = (k, n) => { const v = Math.round((target[k] || 0) * 100); return `<label class="mix-row"><span class="mix-top"><span>${n}</span><span class="num" data-v="${k}">${v}%</span></span><input type="range" min="0" max="100" step="1" value="${v}" data-mix="${k}" aria-label="${n} 음량" style="--p:${v}%"></label>`; };
+  const w = Sheet.open(`<h2 class="sheet-title">소리 믹서</h2><p class="sheet-sub">${inSession ? '지금 명상의 소리를 조절해요.' : '기본 소리를 조절해요. 움직이는 동안 바로 들려요.'}</p>
+    <div style="margin-top:14px">${SOUNDS.map(([k, n]) => row(k, n)).join('')}
+    <label class="mix-row" style="border-bottom:0"><span class="mix-top"><span>전체 볼륨</span><span class="num" data-v="master">${Math.round(S.settings.volume * 100)}%</span></span><input type="range" min="0" max="100" step="1" value="${Math.round(S.settings.volume * 100)}" data-master aria-label="전체 볼륨" style="--p:${S.settings.volume * 100}%"></label></div>
+    <p class="fine">모든 소리는 녹음이 아닌 실시간 생성 소리예요. 편안한 음량을 위해 최대 출력이 제한되어 있어요.</p>
+    <div class="sheet-actions"><button class="btn ghost" data-k="mute">모두 끄기</button>${inSession ? '<button class="btn ghost" data-k="save">기본으로 저장</button>' : ''}<button class="btn primary" data-act="sheet-close">완료</button></div>`, {
+    label: '소리 믹서',
+    onClose() { if (!(Player.active && Player.state !== 'idle')) { Sound.fadeTo(0, .8); Sound.stopAll(1.2); } renderSide(); if (tab === 'today') renderToday(); if (tab === 'settings') renderSettings(); if ($('#detail').classList.contains('open')) renderDetailBody(); },
+  });
+  w.addEventListener('input', e => {
+    const i = e.target; if (i.type !== 'range') return;
+    const v = +i.value; i.style.setProperty('--p', v + '%');
+    if (i.dataset.mix) { const k = i.dataset.mix; target[k] = v / 100; Sound.setLevel(k, v / 100, .05); $(`[data-v=${k}]`, w).textContent = v + '%'; if (!inSession) saveSettings(); }
+    else if (i.hasAttribute('data-master')) { S.settings.volume = v / 100; Sound.setVolume(v / 100); $('[data-v=master]', w).textContent = v + '%'; saveSettings(); }
+  });
+  w.addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    if (b.dataset.k === 'mute') { SOUND_IDS.forEach(k => { target[k] = 0; }); Sound.applyMix(target, .4); $$('[data-mix]', w).forEach(i => { i.value = 0; i.style.setProperty('--p', '0%'); $(`[data-v=${i.dataset.mix}]`, w).textContent = '0%'; }); if (!inSession) saveSettings(); }
+    if (b.dataset.k === 'save') { S.settings.mix = { ...target }; saveSettings(); toast('기본 소리로 저장했어요.'); }
+  });
+}
+
+/* =========================================================
+   Player — timer, breath sync, guidance, completion
+   ========================================================= */
+class Clock {
+  constructor(ms) { this.d = ms; this.startedAt = 0; this.pausedTotal = 0; this.pausedAt = null; }
+  start() { this.startedAt = Date.now(); }
+  pause() { if (this.pausedAt == null) this.pausedAt = Date.now(); }
+  resume() { if (this.pausedAt != null) { this.pausedTotal += Date.now() - this.pausedAt; this.pausedAt = null; } }
+  elapsed(now = Date.now()) { return clamp((this.pausedAt ?? now) - this.startedAt - this.pausedTotal, 0, this.d); }
+}
+function buildCues(cfg) {
+  const T = cfg.durationSec, cues = [];
+  if (cfg.kind === 'sleep') {
+    if (cfg.routine) SLEEP_ROUTINE.forEach(([, text], i) => cues.push({ t: i === 0 ? 3 : T * [0, .2, .42, .62][i], text }));
+    else cues.push({ t: 3, text: '편안히 누워, 소리에 몸을 맡겨요.' });
+    return cues;
+  }
+  if (cfg.kind === 'breath') return cues;
+  if (cfg.free || !cfg.script) {
+    cues.push({ t: 2, text: '편안한 자세로, 그저 머물러요.' });
+    if (T >= 90) cues.push({ t: T - 20, text: '곧 마무리할 시간이에요.' });
+    return cues;
+  }
+  const lines = cfg.script, n = lines.length;
+  cues.push({ t: 2, text: INTRO });
+  const a = Math.min(T * .14, 50), b = T * .8;
+  lines.forEach((text, i) => cues.push({ t: n === 1 ? a : a + (b - a) * i / (n - 1), text }));
+  if (T >= 60) cues.push({ t: Math.max(T - 22, T * .9), text: OUTRO });
+  return cues.filter(c => c.t < T - 2).sort((x, y) => x.t - y.t);
+}
+const Player = {
+  active: false, state: 'idle', cfg: null, clock: null, orb: null, cues: [], fired: -1, guideUntil: 0, guideText: '',
+  lastSec: -1, lastPhaseKey: '', lastCount: -1, timers: [], uiT: 0, zenT: 0, motion: 1, rest: 0, breathOffset: 0, noHolds: false,
+  sleepFading: false, wake: null, recordId: null, lastPersist: 0, doneEl: 0, iv: 0, hintShown: false,
+  el: () => $('#player'),
+  later(fn, ms) { this.timers.push(setTimeout(fn, ms)); },
+  applyClasses() {
+    const el = this.el(), c = this.cfg; if (!c) return;
+    el.classList.toggle('kind-breath', c.kind === 'breath');
+    el.classList.toggle('sleep', c.kind === 'sleep');
+    el.classList.toggle('force-dark', c.kind === 'sleep');
+    el.classList.toggle('text-only', S.settings.textOnly);
+    el.classList.toggle('hide-time', S.settings.hideTime);
+    $('#p-holds').hidden = !(c.kind === 'breath' && (c.pattern.h1 > 0 || c.pattern.h2 > 0));
+  },
+  open(cfg, resume) {
+    if (this.state !== 'idle') return;
+    Sheet.closeAll(); closeDetail(); closeSleep();
+    this.state = 'intro'; this.active = true; this.cfg = cfg;
+    this.cues = buildCues(cfg); this.fired = -1; this.guideText = ''; this.guideUntil = 0; this.lastSec = -1; this.lastPhaseKey = ''; this.lastCount = -1;
+    this.motion = 1; this.rest = 0; this.noHolds = false; this.sleepFading = false; this.recordId = null; this.timers = [];
+    this.breathOffset = resume ? resume.breathOffset || 0 : 0;
+    const el = this.el();
+    el.className = ''; el.hidden = false; this.applyClasses();
+    $('#p-title').textContent = cfg.title;
+    $('#p-kind').textContent = { meditation: 'MEDITATION', breath: 'BREATHING', sleep: 'SLEEP' }[cfg.kind];
+    $('#p-done').hidden = true; $('#p-done').innerHTML = '';
+    $('#p-guide').textContent = ''; $('#p-sub').textContent = ''; $('#p-phase').textContent = ''; $('#p-count').textContent = '';
+    $('#p-time').textContent = fmtClock(cfg.durationSec * 1000 - (resume ? resume.elapsed : 0));
+    $('#p-bar').style.transform = 'scaleX(0)';
+    $('#p-holds').setAttribute('aria-pressed', 'false');
+    $('#p-zen').setAttribute('aria-pressed', 'false');
+    $('#p-audio').hidden = true;
+    document.body.classList.add('immersive', 'locked');
+    setSceneTheme(cfg.theme, false, cfg.kind === 'sleep' ? 'dark' : null);
+    if (!this.orb) this.orb = new Orb($('#p-canvas'), false);
+    this.orb.rich = cfg.kind === 'breath';
+    if (this.orb.rich && !this.orb.parts.length) this.orb.parts = Array.from({ length: 54 }, () => ({ a: Math.random() * TAU, o: Math.random(), s: .5 + Math.random() * .9, r: .5 + Math.random() * 1.2 }));
+    const ctx = Sound.ensure();
+    if (ctx) { Sound.fadeTo(0, .02); Sound.applyMix(cfg.mix, .02); Sound.fadeTo(1, Math.max(.3, S.settings.fadeIn)); }
+    requestAnimationFrame(() => { el.classList.add('in'); this.orb.size = 0; this.orb.resize(); });
+    Loop.add(this.frame);
+    Back.push(this.onBack);
+    this.later(() => el.classList.add('orb-in'), 300);
+    this.later(() => {
+      this.clock = new Clock(cfg.durationSec * 1000);
+      if (resume) this.clock.startedAt = Date.now() - resume.elapsed; else this.clock.start();
+      this.state = 'running'; this.persist();
+      if (cfg.chimeStart) Sound.chime(.8);
+      if (cfg.voice === 'upload' && !GuideAudio.play(resume ? resume.elapsed / 1000 : 0)) toast('내 안내 음원이 없어 텍스트로 안내할게요.');
+      this.updateToggle(); this.showUI(true);
+    }, resume ? 500 : 1100);
+    this.iv = setInterval(() => this.tick(), 1000);
+    this.requestWake();
+  },
+  onBack: () => { Back.push(Player.onBack); if (Player.state === 'done') Player.closeFromDone(); else if (Player.state === 'running' || Player.state === 'paused') Player.askEnd(); },
+  frame: now => {
+    const P = Player, st = P.state; if (!P.cfg) return;
+    let elMs = 0;
+    if (P.clock && (st === 'running' || st === 'paused')) elMs = P.clock.elapsed();
+    else if (st === 'done') elMs = P.doneEl;
+    const pat = P.effPattern(), b = breathAt(pat, Math.max(0, (elMs - P.breathOffset) / 1000));
+    if (st === 'running') {
+      const key = b.phase + ':' + b.cycle;
+      if (key !== P.lastPhaseKey) { P.lastPhaseKey = key; P.onPhase(b); }
+    }
+    if ((st === 'running' || st === 'paused') && (P.cfg.kind === 'breath' || S.settings.textOnly)) {
+      const c = Math.ceil(b.remain - 1e-6);
+      if (c !== P.lastCount) { P.lastCount = c; $('#p-count').textContent = c; }
+    }
+    const tm = st === 'done' ? 0 : st === 'paused' ? .3 : 1;
+    P.motion += (tm - P.motion) * .02;
+    let scale;
+    if (st === 'intro') { P.rest += (0 - P.rest) * .05; scale = P.rest; }
+    else if (st === 'done' || st === 'closing') { P.rest += (.35 - P.rest) * .01; scale = P.rest; }
+    else { scale = b.scale; P.rest = scale; }
+    if (!S.settings.textOnly) P.orb.draw(now, { scale, phase: st === 'running' || st === 'paused' ? b.phase : 'h1', p: st === 'done' ? 1 : b.p, motion: P.motion, dim: P.cfg.kind === 'sleep' ? .55 : 1, dark: P.cfg.kind === 'sleep' });
+    P.tick();
+  },
+  effPattern() { const p = this.cfg.pattern; return this.noHolds ? { ...p, h1: 0, h2: 0 } : p; },
+  onPhase(b) {
+    const c = this.cfg;
+    if (c.kind === 'breath' || S.settings.textOnly) $('#p-phase').textContent = PH_LABEL[b.phase];
+    if (c.kind === 'breath') {
+      $('#p-sub').textContent = `${b.cycle + 1}번째 호흡`;
+      if (c.voice === 'tts') Voice.speak({ in: '들이쉬고', out: '내쉬고', h1: '멈추고', h2: '멈추고' }[b.phase], 1);
+      return;
+    }
+    if (c.kind === 'sleep') return;
+    if (S.settings.showGuide && performance.now() > this.guideUntil) {
+      const calm = b.cycle >= 3 && b.cycle % 4 === 3;
+      this.setGuide(calm ? '지금의 감각을 느껴보세요.' : { in: '천천히 숨을 들이마셔요.', out: '편안하게 내쉬어요.', h1: '잠시 그대로 머물러요.', h2: '잠시 그대로 머물러요.' }[b.phase]);
+    }
+  },
+  setGuide(text) {
+    if (text === this.guideText) return;
+    this.guideText = text;
+    const g = $('#p-guide'); g.classList.add('fade');
+    clearTimeout(this.guideT); this.guideT = setTimeout(() => { g.textContent = text; g.classList.remove('fade'); }, 420);
+  },
+  checkCues(elMs) {
+    let i = this.fired;
+    while (i + 1 < this.cues.length && this.cues[i + 1].t * 1000 <= elMs) i++;
+    if (i === this.fired) return;
+    this.fired = i;
+    const cue = this.cues[i], fresh = elMs - cue.t * 1000 < 6000;
+    if (S.settings.showGuide || this.cfg.kind === 'sleep') { this.setGuide(cue.text); this.guideUntil = performance.now() + (this.cfg.kind === 'sleep' ? 30000 : 12000); }
+    if (fresh && this.cfg.voice === 'tts') Voice.speak(cue.text, this.cfg.kind === 'sleep' ? Math.min(S.settings.rate, .85) : undefined);
+  },
+  tick() {
+    const st = this.state; if (st !== 'running' && st !== 'paused') return;
+    const elMs = this.clock.elapsed(), rem = this.clock.d - elMs, sec = Math.ceil(rem / 1000);
+    if (sec !== this.lastSec) {
+      this.lastSec = sec; $('#p-time').textContent = fmtClock(rem);
+      $('#p-prog').setAttribute('aria-valuenow', Math.round(elMs / this.clock.d * 100));
+    }
+    $('#p-bar').style.transform = `scaleX(${(elMs / this.clock.d).toFixed(4)})`;
+    if (st !== 'running') return;
+    this.checkCues(elMs);
+    if (this.cfg.kind === 'sleep' && !this.sleepFading) {
+      const fadeMs = clamp(this.clock.d * .2, 30000, 120000);
+      if (rem <= fadeMs) { this.sleepFading = true; Sound.fadeTo(0, rem / 1000); }
+    }
+    if (Date.now() - this.lastPersist > 4000) this.persist();
+    if (elMs >= this.clock.d) this.finish(true);
+  },
+  toggle() {
+    if (this.state === 'running') {
+      this.clock.pause(); this.state = 'paused';
+      Sound.fadeTo(.3, .8); Voice.stop(); GuideAudio.pause();
+    } else if (this.state === 'paused') {
+      this.clock.resume(); this.state = 'running';
+      if (this.sleepFading) { this.sleepFading = false; }
+      Sound.fadeTo(1, 1); GuideAudio.resume(); this.lastPhaseKey = '';
+    } else return;
+    this.persist(); this.updateToggle(); this.showUI();
+  },
+  updateToggle() {
+    const p = this.state === 'paused', b = $('#p-toggle');
+    b.innerHTML = p ? `<svg class="ic fillic"><use href="#i-play"/></svg>` : `<svg class="ic"><use href="#i-pause"/></svg>`;
+    b.setAttribute('aria-label', p ? '다시 시작' : '일시정지');
+    this.el().classList.toggle('paused', p);
+  },
+  restart() {
+    if (this.state !== 'running' && this.state !== 'paused') return;
+    this.clock = new Clock(this.cfg.durationSec * 1000); this.clock.start();
+    this.state = 'running'; this.breathOffset = 0; this.fired = -1; this.guideUntil = 0; this.lastPhaseKey = ''; this.sleepFading = false; this.guideText = '';
+    Sound.applyMix(this.cfg.mix, .5); Sound.fadeTo(1, 1);
+    if (this.cfg.voice === 'upload') { GuideAudio.stop(); GuideAudio.play(0); }
+    this.persist(); this.updateToggle(); this.showUI(); toast('처음부터 다시 시작해요.');
+  },
+  setNoHolds(on) {
+    if (!this.clock) return;
+    this.noHolds = on; this.breathOffset = this.clock.elapsed(); this.lastPhaseKey = '';
+    $('#p-holds').setAttribute('aria-pressed', on);
+    toast(on ? '유지 구간 없이 들숨과 날숨만 이어가요.' : '원래 리듬으로 돌아왔어요.');
+  },
+  askEnd() {
+    if (this.state !== 'running' && this.state !== 'paused') return;
+    const el = this.clock.elapsed();
+    confirmSheet({
+      title: '여기서 마칠까요?', body: `지금까지 ${fmtDur(el / 1000)} 머물렀어요.${el >= 10000 ? ' 중간에 마친 기록으로 남아요.' : ''}`,
+      ok: '마치기', cancel: '계속하기', onOk: () => this.finish(false),
+    });
+  },
+  finish(completed) {
+    if (this.state !== 'running' && this.state !== 'paused') return;
+    const elMs = completed ? this.clock.d : this.clock.elapsed();
+    this.state = 'done'; this.doneEl = elMs;
+    clearInterval(this.iv); Voice.stop(); Store.remove('active'); this.releaseWake();
+    const actualSec = Math.round(elMs / 1000), c = this.cfg;
+    let saved = null;
+    if (completed || actualSec >= 10) {
+      saved = Records.add({ kind: c.kind, programId: c.programId, title: c.title, startedAt: Date.now() - elMs - (this.clock.pausedTotal || 0), endedAt: Date.now(), plannedSec: c.durationSec, actualSec, completed });
+      this.recordId = saved.id;
+    }
+    const fo = Math.max(.5, S.settings.fadeOut);
+    if (!(c.kind === 'sleep' && this.sleepFading)) Sound.fadeTo(0, completed ? (c.kind === 'sleep' ? Math.max(fo, 10) : fo) : Math.min(fo, 1.5));
+    GuideAudio.fadeOut(completed ? 3 : 1);
+    refreshAfterRecord();
+    if (!completed) { this.close(); toast(saved ? `중간에 마친 명상으로 기록했어요 · ${fmtDur(actualSec)}` : '10초 미만이라 기록하지 않았어요.'); return; }
+    if (c.kind !== 'sleep' && (c.kind === 'breath' ? c.chimeEnd : S.settings.chime)) setTimeout(() => Sound.chime(), 500);
+    const el = this.el(); el.classList.add('done'); el.classList.remove('idle', 'zen', 'reveal');
+    clearTimeout(this.guideT); $('#p-guide').textContent = ''; this.guideText = '';
+    this.later(() => this.showDone(actualSec), c.kind === 'sleep' ? 600 : 1500);
+  },
+  showDone(sec) {
+    const c = this.cfg, sleep = c.kind === 'sleep', box = $('#p-done');
+    let mood = null;
+    box.innerHTML = `<div class="done-inner">
+      <p class="eyebrow">${{ meditation: '명상', breath: '호흡', sleep: '수면 모드' }[c.kind]} 완료</p>
+      <h2 class="done-title">${sleep ? '편안한 밤 되세요.' : '오늘도 고요한 시간을 보냈어요.'}</h2>
+      <p class="done-meta num">${esc(c.title)} · ${fmtDur(sec)} · 기록에 저장했어요</p>
+      ${sleep ? '' : `<div class="mood-grid" role="group" aria-label="지금의 기분">${moodChips(null)}</div>
+      <label class="sr" for="done-note">메모</label><textarea id="done-note" maxlength="1000" placeholder="남기고 싶은 느낌이 있다면 짧게 적어 보세요. (선택)"></textarea>`}
+      <div class="done-actions"><button class="btn primary wide" data-k="close">${sleep ? '닫기' : '저장하고 닫기'}</button>${sleep ? '' : '<button class="btn quiet" data-k="skip">그냥 닫기</button>'}</div></div>`;
+    box.hidden = false;
+    box.onclick = e => {
+      const b = e.target.closest('button'); if (!b) return;
+      if (b.dataset.mood) { mood = mood === b.dataset.mood ? null : b.dataset.mood; $$('[data-mood]', box).forEach(x => x.setAttribute('aria-pressed', x.dataset.mood === mood)); }
+      if (b.dataset.k === 'close') {
+        const note = $('#done-note', box)?.value.trim() || '';
+        if (this.recordId && (mood || note)) { Records.update(this.recordId, { mood, note: note.slice(0, 1000) }); toast('일지와 함께 기록했어요.'); }
+        this.close();
+      }
+      if (b.dataset.k === 'skip') this.close();
+    };
+    setTimeout(() => $('button', box)?.focus({ preventScroll: true }), 300);
+  },
+  closeFromDone() { this.close(); },
+  close() {
+    if (this.state === 'idle' || this.state === 'closing') return;
+    const el = this.el();
+    this.timers.forEach(clearTimeout); this.timers = []; clearInterval(this.iv); clearTimeout(this.uiT); clearTimeout(this.zenT);
+    clearTimeout(this.guideT); Voice.stop(); GuideAudio.stop(); this.releaseWake();
+    if (this.state !== 'done') Store.remove('active');
+    Sheet.closeAll();
+    Back.drop(this.onBack);
+    this.exitFullscreen();
+    Sound.fadeTo(0, this.state === 'done' ? 1.5 : .6); Sound.stopAll(this.state === 'done' ? Math.max(2, S.settings.fadeOut + 1) : 1);
+    this.state = 'closing';
+    el.classList.remove('in');
+    document.body.classList.remove('immersive');
+    if (!$('#detail').classList.contains('open') && !$('#sleep').classList.contains('open')) document.body.classList.remove('locked');
+    setSceneTheme(S.settings.scene);
+    setTimeout(() => { el.hidden = true; el.className = ''; Loop.remove(this.frame); this.state = 'idle'; this.active = false; this.cfg = null; this.clock = null; rerenderCurrent(); }, 650);
+  },
+  showUI(first) {
+    const el = this.el(); if (this.state === 'done') return;
+    el.classList.remove('idle');
+    if (el.classList.contains('zen')) { el.classList.add('reveal'); clearTimeout(this.zenT); this.zenT = setTimeout(() => el.classList.remove('reveal'), 4000); }
+    clearTimeout(this.uiT);
+    if (!S.settings.alwaysControls && this.state === 'running') {
+      this.uiT = setTimeout(() => {
+        if (this.state !== 'running') return;
+        el.classList.add('idle');
+        if (!this.hintShown) { this.hintShown = true; const h = $('#p-hint'); h.classList.add('show'); setTimeout(() => h.classList.remove('show'), 3200); }
+      }, first ? 5000 : 4000);
+    }
+  },
+  toggleZen() {
+    const el = this.el(), on = !el.classList.contains('zen');
+    el.classList.toggle('zen', on); $('#p-zen').setAttribute('aria-pressed', on);
+    if (on) {
+      el.classList.remove('reveal');
+      if (S.settings.zenFullscreen) { const d = document.documentElement, rq = d.requestFullscreen || d.webkitRequestFullscreen; if (rq) try { const p = rq.call(d); p && p.catch && p.catch(() => {}); } catch (e) {} }
+      toast('Zen 모드 · 화면을 누르면 버튼이 잠시 나타나요', 2600);
+    } else { el.classList.remove('reveal'); this.exitFullscreen(); this.showUI(); }
+  },
+  exitFullscreen() { const fe = document.fullscreenElement || document.webkitFullscreenElement; if (fe) { const ex = document.exitFullscreen || document.webkitExitFullscreen; try { const p = ex.call(document); p && p.catch && p.catch(() => {}); } catch (e) {} } },
+  persist() {
+    if (!this.clock || (this.state !== 'running' && this.state !== 'paused')) return;
+    this.lastPersist = Date.now();
+    Store.write('active', { v: 1, cfg: this.cfg, startedAt: this.clock.startedAt, pausedTotal: this.clock.pausedTotal, pausedAt: this.clock.pausedAt, lastSeen: Date.now(), breathOffset: this.breathOffset });
+  },
+  async requestWake() {
+    try { if ('wakeLock' in navigator && !this.wake && document.visibilityState === 'visible') { this.wake = await navigator.wakeLock.request('screen'); this.wake.addEventListener('release', () => { this.wake = null; }); } } catch (e) { this.wake = null; }
+  },
+  releaseWake() { try { this.wake && this.wake.release(); } catch (e) {} this.wake = null; },
+};
+function refreshAfterRecord() { renderSide(); if (tab === 'records') renderRecords(); }
+
+/* restore an interrupted session */
+function checkRestore() {
+  const a = Store.read('active', null, v => v && typeof v === 'object' && v.cfg && Number.isFinite(v.startedAt));
+  if (!a) return;
+  const cfg = a.cfg;
+  if (!cfg || typeof cfg.durationSec !== 'number' || !['meditation', 'breath', 'sleep'].includes(cfg.kind) || !cfg.pattern || Date.now() - a.lastSeen > 12 * 3600000) { Store.remove('active'); return; }
+  const dur = cfg.durationSec * 1000;
+  const elapsed = clamp((a.pausedAt ?? a.lastSeen) - a.startedAt - (a.pausedTotal || 0), 0, dur);
+  const finished = elapsed >= dur - 1000;
+  const record = completed => {
+    if (elapsed >= 10000 || completed) Records.add({ kind: cfg.kind, programId: cfg.programId, title: String(cfg.title || '명상'), startedAt: a.startedAt, endedAt: a.lastSeen, plannedSec: cfg.durationSec, actualSec: Math.round(elapsed / 1000), completed });
+    Store.remove('active'); rerenderCurrent();
+  };
+  const w = Sheet.open(`<h2 class="sheet-title">${finished ? '지난 명상이 끝나 있었어요' : '진행 중이던 명상이 있어요'}</h2>
+    <p class="sheet-sub">${esc(cfg.title)} · ${fmtDur(elapsed / 1000)} 진행${finished ? '' : ` · ${fmtDur((dur - elapsed) / 1000)} 남음`}</p>
+    <div class="sheet-actions" style="flex-direction:column">
+      ${finished ? `<button class="btn primary" data-k="done" data-autofocus>완료로 기록하기</button>` : `<button class="btn primary" data-k="resume" data-autofocus>${ic('play')}이어서 하기</button><button class="btn ghost" data-k="stop">여기까지 기록하고 마치기</button>`}
+      <button class="btn quiet" data-k="discard">기록하지 않고 닫기</button></div>`, { label: '세션 복구', onClose: () => {} });
+  w.addEventListener('click', e => {
+    const k = e.target.closest('button')?.dataset.k; if (!k) return;
+    Sheet.close();
+    if (k === 'resume') { Store.remove('active'); Player.open(cfg, { elapsed, breathOffset: a.breathOffset || 0 }); }
+    if (k === 'stop') record(false);
+    if (k === 'done') record(true);
+    if (k === 'discard') { Store.remove('active'); toast('지난 세션을 정리했어요.'); }
+  });
+}
+
+/* =========================================================
+   Onboarding
+   ========================================================= */
+let OB = null;
+function showOnboarding() {
+  OB = { step: 0, goals: new Set(S.settings.goals), minutes: S.settings.duration };
+  const el = $('#onboard'); el.hidden = false; document.body.classList.add('locked', 'ob-open');
+  renderOnboard();
+  requestAnimationFrame(() => el.classList.add('in'));
+}
+function renderOnboard() {
+  const el = $('#onboard'), s = OB.step;
+  const goals = [['calm', '마음 안정'], ['focus', '집중'], ['rest', '편안한 휴식'], ['sleep', '수면'], ['free', '자유롭게 시작']];
+  const mins = [3, 5, 10, 15];
+  const body = [
+    `<div class="ob-step"><p class="eyebrow">GOYO · 고요</p><h2 style="margin-top:12px">당신만의<br>고요한 순간</h2><p>잠시 멈추고, 숨을 고르고, 지금에 머무는 곳이에요. 회원가입도, 알림 압박도 없어요.</p></div>`,
+    `<div class="ob-step"><h2>어떤 시간을<br>보내고 싶나요?</h2><p>여러 개를 골라도 괜찮아요. 추천 명상에 반영돼요.</p><div class="chips">${goals.map(([k, n]) => `<button class="chip" data-g="${k}" aria-pressed="${OB.goals.has(k)}">${n}</button>`).join('')}</div></div>`,
+    `<div class="ob-step"><h2>하루에 몇 분이<br>좋을까요?</h2><p>기본 명상 시간으로 저장되고, 언제든 바꿀 수 있어요.</p><div class="chips">${mins.map(m => `<button class="chip" data-m="${m}" aria-pressed="${OB.minutes === m}">${m}분</button>`).join('')}<button class="chip" data-m="custom" aria-pressed="${!mins.includes(OB.minutes)}">직접 설정</button></div>
+     <div ${mins.includes(OB.minutes) ? 'hidden' : ''} id="ob-custom" style="margin-top:16px"><div class="stepper xl"><button data-k="-" aria-label="1분 줄이기">${ic('minus')}</button><span class="val num">${OB.minutes}<small>분</small></span><button data-k="+" aria-label="1분 늘리기">${ic('plus')}</button></div></div></div>`,
+  ][s];
+  el.innerHTML = `<div class="ob-shade"></div>
+    <div class="ob-top"><div class="ob-dots" aria-hidden="true">${[0, 1, 2].map(i => `<i class="${i === s ? 'on' : ''}"></i>`).join('')}</div><button class="btn quiet sm" data-k="skip">건너뛰기</button></div>
+    <div class="ob-body" role="dialog" aria-modal="true" aria-label="처음 안내">${body}
+      <div class="ob-actions">${s > 0 ? `<button class="btn quiet" data-k="prev">이전</button>` : '<span></span>'}<button class="btn primary" data-k="next">${s === 2 ? '시작하기' : '다음'}</button></div></div>`;
+  setTimeout(() => $('[data-k=next]', el)?.focus({ preventScroll: true }), 50);
+}
+function finishOnboarding(save) {
+  if (save) { S.settings.goals = [...OB.goals]; S.settings.duration = clamp(OB.minutes, 1, 120); saveSettings(true); }
+  try { localStorage.setItem(KEY + 'onboarded', '1'); } catch (e) {}
+  const el = $('#onboard'); el.classList.remove('in'); document.body.classList.remove('ob-open');
+  setTimeout(() => { el.hidden = true; el.innerHTML = ''; if (!$('#detail').classList.contains('open')) document.body.classList.remove('locked'); }, 600);
+  rerenderCurrent();
+}
+$('#onboard').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b || !OB) return;
+  if (b.dataset.g) { OB.goals.has(b.dataset.g) ? OB.goals.delete(b.dataset.g) : OB.goals.add(b.dataset.g); b.setAttribute('aria-pressed', OB.goals.has(b.dataset.g)); return; }
+  if (b.dataset.m) { if (b.dataset.m === 'custom') { $('#ob-custom').hidden = false; $$('[data-m]').forEach(x => x.setAttribute('aria-pressed', x === b)); return; } OB.minutes = +b.dataset.m; renderOnboard(); return; }
+  if (b.dataset.k === '-' || b.dataset.k === '+') { OB.minutes = clamp(OB.minutes + (b.dataset.k === '+' ? 1 : -1), 1, 120); $('#ob-custom .val').innerHTML = `${OB.minutes}<small>분</small>`; return; }
+  if (b.dataset.k === 'skip') finishOnboarding(false);
+  if (b.dataset.k === 'prev') { OB.step = Math.max(0, OB.step - 1); renderOnboard(); }
+  if (b.dataset.k === 'next') { if (OB.step < 2) { OB.step++; renderOnboard(); } else finishOnboarding(true); }
+});
+
+/* =========================================================
+   Global events
+   ========================================================= */
+let lastAct = 0, lastActKey = '';
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-act]'); if (!t || t.disabled) return;
+  const act = t.dataset.act, now = performance.now();
+  // guard against rapid double activations of the same control
+  const key = act + (t.dataset.id || t.dataset.tab || t.dataset.path || t.dataset.key || '');
+  if (key === lastActKey && now - lastAct < 280 && !['step', 'd-min', 'bar', 'b-ripple'].includes(act)) return;
+  lastAct = now; lastActKey = key;
+  if (Sound.ready === false && ['start-program', 'quick', 'breath-start', 'sleep-start', 'detail-start', 'mixer'].includes(act)) Sound.ensure();
+  switch (act) {
+    case 'tab': go(t.dataset.tab); break;
+    case 'detail': openDetail(t.dataset.id); break;
+    case 'detail-close': closeDetail(); break;
+    case 'start-program': Player.open(programCfg(PROG[t.dataset.id])); break;
+    case 'quick': { const q = QUICK[+t.dataset.i]; if (q.free) openFreeSheet(); else Player.open(programCfg(PROG[q.prog], { minutes: q.min, theme: PROG[q.prog].theme })); break; }
+    case 'sleep': openSleep(); break;
+    case 'sleep-close': closeSleep(); break;
+    case 'sleep-start': Player.open(sleepCfg()); break;
+    case 'sleep-custom': $('#sl-custom').hidden = false; $$('#sl-body .chips .chip').forEach(c => c.setAttribute('aria-pressed', c === t)); break;
+    case 'mixer': openMixer(); break;
+    case 'sheet-close': Sheet.close(); break;
+    case 'fav': {
+      const id = t.dataset.id, i = S.favs.indexOf(id);
+      if (i >= 0) S.favs.splice(i, 1); else S.favs.push(id);
+      saveFavs();
+      $$(`.fav-btn[data-id="${id}"]`).forEach(b => b.setAttribute('aria-pressed', S.favs.includes(id)));
+      toast(S.favs.includes(id) ? '즐겨찾기에 담았어요.' : '즐겨찾기에서 뺐어요.', 1800);
+      if (tab === 'library' && Lib.fav) renderLibResults();
+      break;
+    }
+    case 'lib-cat': { const k = t.dataset.k; if (k === 'fav') Lib.fav = !Lib.fav; else { Lib.cat = k; if (k === 'all') Lib.fav = false; } renderLibResults(); break; }
+    case 'lib-filter': openLibFilter(); break;
+    case 'lib-set': Lib[t.dataset.key] = t.dataset.val; $$(`[data-act=lib-set][data-key=${t.dataset.key}]`).forEach(b => b.setAttribute('aria-pressed', b === t)); renderLibResults(); break;
+    case 'lib-favtoggle': Lib.fav = !Lib.fav; t.setAttribute('aria-pressed', Lib.fav); renderLibResults(); break;
+    case 'lib-reset': Lib.time = 'all'; Lib.level = 'all'; Lib.fav = false; Sheet.close(); renderLibResults(); break;
+    case 'd-min': D.minutes = clamp(D.minutes + +t.dataset.d, 1, 120); renderDetailBody(); break;
+    case 'd-minset': D.minutes = +t.dataset.m; renderDetailBody(); break;
+    case 'd-voice': D.voice = !D.voice; if (D.voice && S.settings.voice === 'off') { S.settings.voice = 'tts'; saveSettings(); } renderDetailBody(); break;
+    case 'd-sound': D.sound = t.dataset.v; renderDetailBody(); break;
+    case 'd-theme': D.theme = t.dataset.k; renderDetailBody(); renderStill($('#d-canvas'), D.theme, resolvedMode()); break;
+    case 'detail-start': Player.open(programCfg(PROG[D.id], D)); break;
+    case 'breath-start': Player.open(breathCfg()); break;
+    case 'b-ripple': BreathPreview.orb && BreathPreview.orb.ripple(); break;
+    case 'set': { let v = t.dataset.val; if (t.dataset.num) v = +v; setSetting(t.dataset.path, v); break; }
+    case 'toggle': setSetting(t.dataset.key, !getPath(S.settings, t.dataset.key)); break;
+    case 'step': { const p = t.dataset.path, v = clamp(getPath(S.settings, p) + +t.dataset.d, +t.dataset.min, +t.dataset.max); setSetting(p, v); break; }
+    case 'chime-test': Sound.chime(); break;
+    case 'voice-test': if (!Voice.speak('지금 이 순간에 머물러 보세요.')) toast('이 브라우저에서 음성을 재생할 수 없어요.'); break;
+    case 'guide-upload': $('#file-guide').click(); break;
+    case 'guide-test': if (GuideAudio.el && !GuideAudio.el.paused) GuideAudio.stop(); else GuideAudio.play(0); break;
+    case 'guide-del': GuideAudio.clear().then(() => { toast('안내 음원을 삭제했어요.'); renderSettings(); }); break;
+    case 'export': exportData(); break;
+    case 'import': $('#file-import').click(); break;
+    case 'reset-records': confirmSheet({ title: '기록을 모두 지울까요?', body: '명상 기록과 일지가 이 기기에서 삭제되며 되돌릴 수 없어요. 필요하면 먼저 내보내기를 해 두세요.', ok: '기록 지우기', onOk: () => { Records.clear(); toast('기록을 초기화했어요.'); rerenderCurrent(); } }); break;
+    case 'reset-all': confirmSheet({ title: '모든 데이터를 초기화할까요?', body: '기록, 일지, 설정, 즐겨찾기, 내 안내 음원이 모두 삭제돼요. 되돌릴 수 없어요.', ok: '모두 지우기', onOk: () => { try { Object.keys(localStorage).filter(k => k.startsWith(KEY)).forEach(k => localStorage.removeItem(k)); } catch (e) {} GuideAudio.clear(); S.records = []; S.favs = []; S.settings = clampSettings(sanitize(DEFAULTS, {})); saveSettings(true); applyAppearance(); setSceneTheme(S.settings.scene); Sound.setVolume(S.settings.volume); toast('모든 데이터를 초기화했어요.'); rerenderCurrent(); setTimeout(showOnboarding, 500); } }); break;
+    case 'onboarding': showOnboarding(); break;
+    case 'journal': openJournal(t.dataset.id); break;
+    case 'del-record': confirmSheet({ title: '이 기록을 삭제할까요?', body: '일지도 함께 삭제돼요.', ok: '삭제', onOk: () => { Records.remove(t.dataset.id); toast('기록을 삭제했어요.'); rerenderCurrent(); } }); break;
+    case 'jr-more': jrLimit += 20; renderRecords(); break;
+    case 'day': openDay(t.dataset.k); break;
+    case 'bar': { const on = !t.classList.contains('on'); $$('.bar').forEach(b => b.classList.remove('on')); t.classList.toggle('on', on); break; }
+    case 'p-toggle': Player.toggle(); break;
+    case 'p-end': Player.askEnd(); break;
+    case 'p-restart': if (Player.state === 'running' || Player.state === 'paused') confirmSheet({ title: '처음부터 다시 시작할까요?', body: '타이머와 안내가 처음으로 돌아가요.', ok: '다시 시작', cancel: '계속하기', onOk: () => Player.restart() }); break;
+    case 'p-zen': Player.toggleZen(); break;
+    case 'p-holds': Player.setNoHolds(!Player.noHolds); break;
+    case 'p-audio': Sound.ensure(); Sound.resume().then(ok => { $('#p-audio').hidden = ok; if (!ok) toast('소리를 다시 켜지 못했어요. 기기의 무음 모드를 확인해 주세요.'); }); break;
+  }
+});
+document.addEventListener('input', e => {
+  const i = e.target;
+  if (i.matches('input[type=range][data-path]')) {
+    const sc = +(i.dataset.scale || 1), v = +i.value / sc;
+    const min = +i.min, max = +i.max; i.style.setProperty('--p', ((+i.value - min) / (max - min) * 100).toFixed(1) + '%');
+    setSetting(i.dataset.path, v, { render: false });
+    if (i.dataset.path === 'volume') { $('#vol-v').textContent = Math.round(v * 100) + '%'; }
+    if (i.dataset.path === 'rate') $('#rate-v').textContent = v.toFixed(2) + '×';
+  }
+});
+document.addEventListener('change', e => {
+  const i = e.target;
+  if (i.matches('select[data-path]')) setSetting(i.dataset.path, i.value, { render: false });
+  if (i.id === 'file-import') { importData(i.files[0]); i.value = ''; }
+  if (i.id === 'file-guide') { GuideAudio.set(i.files[0]).then(() => { renderSettings(); if (D) renderDetailBody(); }); i.value = ''; }
+});
+// player: tap to reveal controls
+$('#player').addEventListener('pointerdown', e => {
+  if (!Player.active) return;
+  if (!e.target.closest('button, .p-done')) { Player.showUI(); if (Player.cfg && Player.cfg.kind === 'breath') Player.orb.ripple(); }
+});
+$('#player').addEventListener('pointermove', e => { if (e.pointerType === 'mouse' && Player.state === 'running' && Player.el().classList.contains('idle') && !Player.el().classList.contains('zen')) Player.showUI(); });
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    if (Sheet.top) { Sheet.close(); return; }
+    if (!$('#onboard').hidden) { finishOnboarding(false); return; }
+    if (Player.active) {
+      if (Player.el().classList.contains('zen')) Player.toggleZen();
+      else if (Player.state === 'done') Player.close();
+      else Player.askEnd();
+      return;
+    }
+    if ($('#detail').classList.contains('open')) { closeDetail(); return; }
+    if ($('#sleep').classList.contains('open')) { closeSleep(); return; }
+  }
+  if (Player.active && !Sheet.top && !e.target.closest('input, textarea, select')) {
+    if (e.key === ' ' && !e.target.closest('button')) { e.preventDefault(); Player.toggle(); }
+    if (e.key === 'z' || e.key === 'Z') Player.toggleZen();
+    Player.showUI();
+  }
+});
+// focus trap for sheets
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Tab') return;
+  const top = Sheet.top; const root = top ? top.wrap.querySelector('.sheet') : null; if (!root) return;
+  const f = $$('button:not([disabled]), input, textarea, select, [tabindex]:not([tabindex="-1"])', root).filter(x => x.offsetParent !== null);
+  if (!f.length) return;
+  if (e.shiftKey && document.activeElement === f[0]) { e.preventDefault(); f[f.length - 1].focus(); }
+  else if (!e.shiftKey && document.activeElement === f[f.length - 1]) { e.preventDefault(); f[0].focus(); }
+});
+window.addEventListener('scroll', () => { if (tab === 'today' && !Player.active) { scene.scroll = window.scrollY; if (sceneStatic()) drawSceneOnce(); } }, { passive: true });
+window.addEventListener('pointermove', e => { if (e.pointerType === 'mouse') scene.tpx = (e.clientX / window.innerWidth - .5) * 2; }, { passive: true });
+let resizeT = 0, lastW = window.innerWidth, lastH = window.innerHeight;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeT);
+  resizeT = setTimeout(() => {
+    const w = window.innerWidth, h = window.innerHeight;
+    // ignore small height-only changes from mobile address bar
+    if (w === lastW && Math.abs(h - lastH) < 120) return;
+    lastW = w; lastH = h; sizeScene();
+    if (Player.orb) { Player.orb.size = 0; Player.orb.resize(); }
+    if (BreathPreview.orb) { BreathPreview.orb.size = 0; BreathPreview.orb.resize(); }
+    if (D && $('#detail').classList.contains('open')) renderStill($('#d-canvas'), D.theme, resolvedMode());
+  }, 160);
+});
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) { Player.persist(); return; }
+  Loop.kick(); lastFrame = 0;
+  if (Player.active) {
+    Player.tick();
+    if (Player.state === 'running' || Player.state === 'paused') {
+      Player.requestWake();
+      Sound.resume().then(ok => {
+        const hasSound = Player.cfg && SOUND_IDS.some(k => (Player.cfg.mix[k] || 0) > 0);
+        $('#p-audio').hidden = ok || !hasSound;
+        if (!ok && hasSound) toast('브라우저가 백그라운드에서 소리를 멈췄어요. ‘소리 다시 켜기’를 눌러 주세요.', 4200);
+      });
+    }
+  }
+  if (tab === 'today' && lastTodayKey !== dayKey(new Date()) + timeOfDay()) renderToday();
+});
+window.addEventListener('pagehide', () => Player.persist());
+window.addEventListener('storage', e => { if (e.key && e.key.startsWith(KEY) && !Player.active) { loadState(); rerenderCurrent(); } });
+
+/* =========================================================
+   Boot
+   ========================================================= */
+loadState();
+Voice.init();
+GuideAudio.load();
+let initialTab = 'today';
+try { const t = localStorage.getItem(KEY + 'tab'); if (TABS.includes(t)) initialTab = t; } catch (e) {}
+applyAppearance();
+setSceneTheme(S.settings.scene, true);
+$('#s-today').classList.remove('active');
+tab = initialTab; document.body.dataset.tab = tab;
+renderTab(tab); $('#s-' + tab).classList.add('active'); updateNav(); renderSide();
+if (tab === 'breath') BreathPreview.start();
+try { history.replaceState({ goyo: 0 }, ''); } catch (e) {}
+let onboarded = false;
+try { onboarded = localStorage.getItem(KEY + 'onboarded') === '1'; } catch (e) {}
+if (!onboarded) showOnboarding();
+checkRestore();
+if (Store.corrupted) setTimeout(() => toast('저장된 데이터 일부를 읽을 수 없어 안전한 기본값으로 복구했어요.', 4500), 800);
+// unlock audio on first user gesture (autoplay policy)
+const unlock = () => { if (!Sound.ready && !Player.active) { /* create lazily on demand */ } window.removeEventListener('pointerdown', unlock); };
+window.addEventListener('pointerdown', unlock, { once: true });
+})();
+</script>
+</body>
+</html>
